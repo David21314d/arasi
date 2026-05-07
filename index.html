@@ -37,7 +37,6 @@
     justify-content: center;
     padding: 1.5rem;
     background-image: radial-gradient(circle at 15% 30%, rgba(45,212,191,0.05) 0%, transparent 70%);
-    overflow: hidden;
   }
 
   /* APP CONTAINER */
@@ -47,7 +46,7 @@
     margin: 0 auto;
   }
 
-  /* Pantalla de càrrega */
+  /* Pantalla de càrrega SPLASH */
   .splash-screen {
     position: fixed;
     top: 0;
@@ -58,14 +57,13 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    z-index: 1000;
-    transition: opacity 0.6s cubic-bezier(0.2, 0.9, 0.4, 1.1);
-    backdrop-filter: blur(2px);
+    z-index: 2000;
+    transition: opacity 0.5s cubic-bezier(0.2, 0.9, 0.4, 1.1);
   }
 
   .splash-content {
     text-align: center;
-    animation: fadeInUp 0.8s ease-out;
+    animation: fadeInUp 0.6s ease-out;
   }
 
   @keyframes fadeInUp {
@@ -80,15 +78,15 @@
   }
 
   .splash-logo {
-    width: 120px;
-    height: 120px;
+    width: 130px;
+    height: 130px;
     background: linear-gradient(145deg, #2dd4bf, #0f766e);
-    border-radius: 32px;
+    border-radius: 38px;
     display: flex;
     align-items: center;
     justify-content: center;
-    margin: 0 auto 2rem auto;
-    box-shadow: 0 20px 40px rgba(45,212,191,0.25), 0 0 0 1px rgba(45,212,191,0.2);
+    margin: 0 auto 1.8rem auto;
+    box-shadow: 0 25px 45px rgba(45,212,191,0.3), 0 0 0 1px rgba(45,212,191,0.2);
     animation: floatLogo 2s ease-in-out infinite;
   }
 
@@ -98,12 +96,12 @@
   }
 
   .splash-logo span {
-    font-size: 64px;
-    filter: drop-shadow(0 2px 4px rgba(0,0,0,0.2));
+    font-size: 70px;
+    filter: drop-shadow(0 4px 8px rgba(0,0,0,0.2));
   }
 
   .splash-title {
-    font-size: 3rem;
+    font-size: 3.2rem;
     font-weight: 800;
     letter-spacing: -0.02em;
     background: linear-gradient(135deg, #ffffff 0%, #99f6e4 60%, #2dd4bf 100%);
@@ -114,11 +112,12 @@
   }
 
   .splash-sub {
-    font-size: 0.8rem;
+    font-size: 0.85rem;
     color: var(--text-secondary);
-    letter-spacing: 2px;
+    letter-spacing: 3px;
     text-transform: uppercase;
     margin-bottom: 2rem;
+    font-weight: 400;
   }
 
   .loading-dots {
@@ -133,7 +132,7 @@
     height: 10px;
     background: var(--accent);
     border-radius: 50%;
-    opacity: 0.3;
+    opacity: 0.4;
     animation: pulseDot 1.4s infinite;
   }
 
@@ -480,7 +479,7 @@
 </head>
 <body>
 
-<!-- SPLASH / PANTALLA DE CÀRREGA -->
+<!-- SPLASH / PANTALLA DE CÀRREGA INICIAL -->
 <div id="splashScreen" class="splash-screen">
   <div class="splash-content">
     <div class="splash-logo">
@@ -512,12 +511,12 @@
     </div>
   </div>
 
-  <!-- PANTALLA 1: CONNEXIÓ -->
+  <!-- PANTALLA 1: CONNEXIÓ BLUETOOTH -->
   <div id="screenConnect" class="screen hidden">
     <div class="card" style="text-align: center;">
-      <div style="font-size: 3rem; margin-bottom: 1rem;">🎹</div>
-      <h3 style="margin-bottom: 0.5rem;">Connecta el teu TeclaLux</h3>
-      <p style="color: var(--text-secondary); font-size: 0.85rem; margin-bottom: 2rem;">Assegura't que l'ESP32 està encès amb el nom "TeclatMusical"</p>
+      <div style="font-size: 3.5rem; margin-bottom: 1rem;">🎹</div>
+      <h3 style="margin-bottom: 0.5rem; font-size: 1.5rem;">Connecta el teu TeclaLux</h3>
+      <p style="color: var(--text-secondary); font-size: 0.85rem; margin-bottom: 2rem;">Assegura't que l'ESP32 està encès amb el nom <strong>"TeclatMusical"</strong></p>
       <button id="connectScreenBtn" class="btn-primary">⚡ Connectar per Bluetooth</button>
       <p style="font-size: 0.7rem; margin-top: 1.5rem; color: #475569;">La placa guiarà els LEDs mentre aprens</p>
     </div>
@@ -569,315 +568,307 @@
 
 <script src="https://cdn.jsdelivr.net/npm/midi-parser-js@4.0.6/src/midi-parser.js"></script>
 <script>
-  // ---------- CONSTANTS I NOTES ----------
-  const NOTES_BLANQUES = [
-    'DO4','RE4','MI4','FA4','SOL4','LA4','SI4',
-    'DO5','RE5','MI5','FA5','SOL5','LA5','SI5',
-    'DO6','RE6','MI6','FA6','SOL6','LA6','SI6','DO7'
-  ];
-  const MIDI_BASE = {0:'DO',1:'DO#',2:'RE',3:'RE#',4:'MI',5:'FA',6:'FA#',7:'SOL',8:'SOL#',9:'LA',10:'LA#',11:'SI'};
-  const BLANQUES_SET = new Set(['DO','RE','MI','FA','SOL','LA','SI']);
-  const MIDI_A_NOTA = {};
-  for (let midi = 48; midi <= 96; midi++) {
-    const nom = MIDI_BASE[midi % 12];
-    const octava = Math.floor(midi / 12) - 1;
-    if (BLANQUES_SET.has(nom)) {
-      const notaCompleta = nom + octava;
-      if (NOTES_BLANQUES.includes(notaCompleta)) MIDI_A_NOTA[midi] = notaCompleta;
+  (function() {
+    // ---------- CONSTANTS I NOTES ----------
+    const NOTES_BLANQUES = [
+      'DO4','RE4','MI4','FA4','SOL4','LA4','SI4',
+      'DO5','RE5','MI5','FA5','SOL5','LA5','SI5',
+      'DO6','RE6','MI6','FA6','SOL6','LA6','SI6','DO7'
+    ];
+    const MIDI_BASE = {0:'DO',1:'DO#',2:'RE',3:'RE#',4:'MI',5:'FA',6:'FA#',7:'SOL',8:'SOL#',9:'LA',10:'LA#',11:'SI'};
+    const BLANQUES_SET = new Set(['DO','RE','MI','FA','SOL','LA','SI']);
+    const MIDI_A_NOTA = {};
+    for (let midi = 48; midi <= 96; midi++) {
+      const nom = MIDI_BASE[midi % 12];
+      const octava = Math.floor(midi / 12) - 1;
+      if (BLANQUES_SET.has(nom)) {
+        const notaCompleta = nom + octava;
+        if (NOTES_BLANQUES.includes(notaCompleta)) MIDI_A_NOTA[midi] = notaCompleta;
+      }
     }
-  }
 
-  // ---------- ESTAT GLOBAL ----------
-  let btDevice = null, btChar = null;
-  let connected = false;
-  let currentSong = null;
-  let currentNotesSeq = [];   // array de {nota, dur}
-  let currentIndex = 0;
-  let isPlaying = false;
-  let waitingForOk = false;
-  let tempoMultiplier = 1.0;
+    // ---------- ESTAT GLOBAL ----------
+    let btDevice = null, btChar = null;
+    let connected = false;
+    let currentSong = null;
+    let currentNotesSeq = [];
+    let currentIndex = 0;
+    let isPlaying = false;
+    let waitingForOk = false;
+    let tempoMultiplier = 1.0;
 
-  // Cançons predefinides
-  let CANCONS_PRESET = [
-    { nom: 'Cumpleaños Feliz', autor: 'Tradicional', notes: [
-      {nota:'DO4',dur:400},{nota:'DO4',dur:200},{nota:'RE4',dur:600},{nota:'DO4',dur:600},{nota:'FA4',dur:600},{nota:'MI4',dur:1200},
-      {nota:'DO4',dur:400},{nota:'DO4',dur:200},{nota:'RE4',dur:600},{nota:'DO4',dur:600},{nota:'SOL4',dur:600},{nota:'FA4',dur:1200},
-      {nota:'DO4',dur:400},{nota:'DO4',dur:200},{nota:'DO5',dur:600},{nota:'LA4',dur:600},{nota:'FA4',dur:600},{nota:'MI4',dur:600},{nota:'RE4',dur:600},
-      {nota:'SI4',dur:400},{nota:'SI4',dur:200},{nota:'LA4',dur:600},{nota:'FA4',dur:600},{nota:'SOL4',dur:600},{nota:'FA4',dur:1200}
-    ] },
-    { nom: 'Oda a l\'Alegria', autor: 'Beethoven', notes: [
-      {nota:'MI4',dur:400},{nota:'MI4',dur:400},{nota:'FA4',dur:400},{nota:'SOL4',dur:400},{nota:'SOL4',dur:400},{nota:'FA4',dur:400},{nota:'MI4',dur:400},{nota:'RE4',dur:400},
-      {nota:'DO4',dur:400},{nota:'DO4',dur:400},{nota:'RE4',dur:400},{nota:'MI4',dur:400},{nota:'MI4',dur:600},{nota:'RE4',dur:200},{nota:'RE4',dur:800},
-      {nota:'MI4',dur:400},{nota:'MI4',dur:400},{nota:'FA4',dur:400},{nota:'SOL4',dur:400},{nota:'SOL4',dur:400},{nota:'FA4',dur:400},{nota:'MI4',dur:400},{nota:'RE4',dur:400},
-      {nota:'DO4',dur:400},{nota:'DO4',dur:400},{nota:'RE4',dur:400},{nota:'MI4',dur:400},{nota:'RE4',dur:600},{nota:'DO4',dur:200},{nota:'DO4',dur:800}
-    ] }
-  ];
+    // Cançons predefinides
+    let CANCONS_PRESET = [
+      { nom: 'Cumpleaños Feliz', autor: 'Tradicional', notes: [
+        {nota:'DO4',dur:400},{nota:'DO4',dur:200},{nota:'RE4',dur:600},{nota:'DO4',dur:600},{nota:'FA4',dur:600},{nota:'MI4',dur:1200},
+        {nota:'DO4',dur:400},{nota:'DO4',dur:200},{nota:'RE4',dur:600},{nota:'DO4',dur:600},{nota:'SOL4',dur:600},{nota:'FA4',dur:1200},
+        {nota:'DO4',dur:400},{nota:'DO4',dur:200},{nota:'DO5',dur:600},{nota:'LA4',dur:600},{nota:'FA4',dur:600},{nota:'MI4',dur:600},{nota:'RE4',dur:600},
+        {nota:'SI4',dur:400},{nota:'SI4',dur:200},{nota:'LA4',dur:600},{nota:'FA4',dur:600},{nota:'SOL4',dur:600},{nota:'FA4',dur:1200}
+      ] },
+      { nom: 'Oda a l\'Alegria', autor: 'Beethoven', notes: [
+        {nota:'MI4',dur:400},{nota:'MI4',dur:400},{nota:'FA4',dur:400},{nota:'SOL4',dur:400},{nota:'SOL4',dur:400},{nota:'FA4',dur:400},{nota:'MI4',dur:400},{nota:'RE4',dur:400},
+        {nota:'DO4',dur:400},{nota:'DO4',dur:400},{nota:'RE4',dur:400},{nota:'MI4',dur:400},{nota:'MI4',dur:600},{nota:'RE4',dur:200},{nota:'RE4',dur:800},
+        {nota:'MI4',dur:400},{nota:'MI4',dur:400},{nota:'FA4',dur:400},{nota:'SOL4',dur:400},{nota:'SOL4',dur:400},{nota:'FA4',dur:400},{nota:'MI4',dur:400},{nota:'RE4',dur:400},
+        {nota:'DO4',dur:400},{nota:'DO4',dur:400},{nota:'RE4',dur:400},{nota:'MI4',dur:400},{nota:'RE4',dur:600},{nota:'DO4',dur:200},{nota:'DO4',dur:800}
+      ] }
+    ];
 
-  // DOM elements screens
-  const splashScreen = document.getElementById('splashScreen');
-  const screenConnect = document.getElementById('screenConnect');
-  const screenSongs = document.getElementById('screenSongs');
-  const screenLearning = document.getElementById('screenLearning');
-  const globalLed = document.getElementById('globalLed');
-  const globalStatusText = document.getElementById('globalStatusText');
+    // DOM elements
+    const splashScreen = document.getElementById('splashScreen');
+    const screenConnect = document.getElementById('screenConnect');
+    const screenSongs = document.getElementById('screenSongs');
+    const screenLearning = document.getElementById('screenLearning');
+    const globalLed = document.getElementById('globalLed');
+    const globalStatusText = document.getElementById('globalStatusText');
+    const songsListContainer = document.getElementById('songsListContainer');
+    const midiUploadZone = document.getElementById('midiUploadZone');
+    const midiFileInput = document.getElementById('midiFileInput');
+    const nextToLearningBtn = document.getElementById('nextToLearningBtn');
+    const disconnectFromSongs = document.getElementById('disconnectFromSongs');
+    const currentNoteLarge = document.getElementById('currentNoteLarge');
+    const progressCountLabel = document.getElementById('progressCountLabel');
+    const instructionMsg = document.getElementById('instructionMsg');
+    const learningProgressFill = document.getElementById('learningProgressFill');
+    const playPauseLearnBtn = document.getElementById('playPauseLearnBtn');
+    const resetLearnBtn = document.getElementById('resetLearnBtn');
+    const visualKeyboardContainer = document.getElementById('visualKeyboardContainer');
+    const tempoSlider = document.getElementById('tempoSlider');
+    const tempoValue = document.getElementById('tempoValue');
+    const backToSongsFromLearn = document.getElementById('backToSongsFromLearn');
+    const disconnectFromLearn = document.getElementById('disconnectFromLearn');
 
-  // Elements pantalla cançons
-  const songsListContainer = document.getElementById('songsListContainer');
-  const midiUploadZone = document.getElementById('midiUploadZone');
-  const midiFileInput = document.getElementById('midiFileInput');
-  const nextToLearningBtn = document.getElementById('nextToLearningBtn');
-  const disconnectFromSongs = document.getElementById('disconnectFromSongs');
-
-  // Elements pantalla aprenentatge
-  const currentNoteLarge = document.getElementById('currentNoteLarge');
-  const progressCountLabel = document.getElementById('progressCountLabel');
-  const instructionMsg = document.getElementById('instructionMsg');
-  const learningProgressFill = document.getElementById('learningProgressFill');
-  const playPauseLearnBtn = document.getElementById('playPauseLearnBtn');
-  const resetLearnBtn = document.getElementById('resetLearnBtn');
-  const visualKeyboardContainer = document.getElementById('visualKeyboardContainer');
-  const tempoSlider = document.getElementById('tempoSlider');
-  const tempoValue = document.getElementById('tempoValue');
-  const backToSongsFromLearn = document.getElementById('backToSongsFromLearn');
-  const disconnectFromLearn = document.getElementById('disconnectFromLearn');
-
-  // ----- SPLASH: 2 segons i després mostrar connexió -----
-  setTimeout(() => {
-    splashScreen.style.opacity = '0';
+    // ----- SPLASH: 2 segons exactes i després mostrar pantalla de connexió -----
     setTimeout(() => {
-      splashScreen.style.display = 'none';
-      screenConnect.classList.remove('hidden');
-    }, 600);
-  }, 2000);
+      splashScreen.style.opacity = '0';
+      setTimeout(() => {
+        splashScreen.style.display = 'none';
+        screenConnect.classList.remove('hidden');
+      }, 500);
+    }, 2000);
 
-  // ----- Utils visuals -----
-  function renderVirtualKeyboard(highlightNote = null) {
-    visualKeyboardContainer.innerHTML = '';
-    NOTES_BLANQUES.forEach(nota => {
-      const keyDiv = document.createElement('div');
-      keyDiv.className = 'key';
-      keyDiv.textContent = nota.replace(/\d/, '');
-      if (highlightNote === nota) keyDiv.classList.add('lit');
-      visualKeyboardContainer.appendChild(keyDiv);
-    });
-  }
-
-  function highlightKeyByNote(nota) {
-    const keys = document.querySelectorAll('#visualKeyboardContainer .key');
-    const idx = NOTES_BLANQUES.indexOf(nota);
-    keys.forEach((k, i) => k.classList.remove('lit'));
-    if (idx !== -1 && keys[idx]) keys[idx].classList.add('lit');
-  }
-
-  function updateLearningProgress() {
-    if (!currentNotesSeq.length) {
-      progressCountLabel.innerText = `0 / 0`;
-      learningProgressFill.style.width = '0%';
-      return;
+    // ----- Utils visuals -----
+    function renderVirtualKeyboard(highlightNote = null) {
+      visualKeyboardContainer.innerHTML = '';
+      NOTES_BLANQUES.forEach(nota => {
+        const keyDiv = document.createElement('div');
+        keyDiv.className = 'key';
+        keyDiv.textContent = nota.replace(/\d/, '');
+        if (highlightNote === nota) keyDiv.classList.add('lit');
+        visualKeyboardContainer.appendChild(keyDiv);
+      });
     }
-    progressCountLabel.innerText = `${currentIndex} / ${currentNotesSeq.length}`;
-    const percent = (currentIndex / currentNotesSeq.length) * 100;
-    learningProgressFill.style.width = `${percent}%`;
-  }
 
-  // ----- BLE -----
-  async function sendNoteToESP(nota) {
-    if (!btChar || !connected) return false;
-    try {
-      const encoder = new TextEncoder();
-      await btChar.writeValue(encoder.encode(nota + '\n'));
-      return true;
-    } catch(e) { return false; }
-  }
+    function highlightKeyByNote(nota) {
+      const keys = document.querySelectorAll('#visualKeyboardContainer .key');
+      const idx = NOTES_BLANQUES.indexOf(nota);
+      keys.forEach((k, i) => k.classList.remove('lit'));
+      if (idx !== -1 && keys[idx]) keys[idx].classList.add('lit');
+    }
 
-  function handleEspNotification(value) {
-    const msg = value.trim();
-    if (msg === "OK" && waitingForOk && isPlaying) {
-      waitingForOk = false;
-      instructionMsg.innerHTML = '✅ Nota correcta!';
-      currentIndex++;
-      updateLearningProgress();
-      if (currentIndex >= currentNotesSeq.length) {
-        instructionMsg.innerHTML = '🏆 Cançó completada! 🎉';
-        isPlaying = false;
+    function updateLearningProgress() {
+      if (!currentNotesSeq.length) {
+        progressCountLabel.innerText = `0 / 0`;
+        learningProgressFill.style.width = '0%';
+        return;
+      }
+      progressCountLabel.innerText = `${currentIndex} / ${currentNotesSeq.length}`;
+      const percent = (currentIndex / currentNotesSeq.length) * 100;
+      learningProgressFill.style.width = `${percent}%`;
+    }
+
+    // ----- BLE -----
+    async function sendNoteToESP(nota) {
+      if (!btChar || !connected) return false;
+      try {
+        const encoder = new TextEncoder();
+        await btChar.writeValue(encoder.encode(nota + '\n'));
+        return true;
+      } catch(e) { return false; }
+    }
+
+    function handleEspNotification(value) {
+      const msg = value.trim();
+      if (msg === "OK" && waitingForOk && isPlaying) {
         waitingForOk = false;
-        playPauseLearnBtn.innerHTML = '▶';
-        currentNoteLarge.textContent = '✔️';
-        highlightKeyByNote(null);
-      } else {
-        setTimeout(() => { if (isPlaying && !waitingForOk) askNextNote(); }, 200);
+        instructionMsg.innerHTML = '✅ Nota correcta!';
+        currentIndex++;
+        updateLearningProgress();
+        if (currentIndex >= currentNotesSeq.length) {
+          instructionMsg.innerHTML = '🏆 Cançó completada! 🎉';
+          isPlaying = false;
+          waitingForOk = false;
+          playPauseLearnBtn.innerHTML = '▶';
+          currentNoteLarge.textContent = '✔️';
+          highlightKeyByNote(null);
+        } else {
+          setTimeout(() => { if (isPlaying && !waitingForOk) askNextNote(); }, 200);
+        }
+      } else if (msg.startsWith("ERROR")) {
+        waitingForOk = false;
+        instructionMsg.innerHTML = '❌ Nota incorrecta, torna a tocar';
+        const wrongIdx = currentIndex;
+        if (wrongIdx < currentNotesSeq.length) {
+          const currentNotaFail = currentNotesSeq[wrongIdx].nota;
+          highlightKeyByNote(currentNotaFail);
+          setTimeout(() => {
+            if (isPlaying && currentIndex < currentNotesSeq.length && !waitingForOk) {
+              instructionMsg.innerHTML = `🎯 Toca: ${currentNotaFail}`;
+              sendNoteToESP(currentNotaFail);
+              waitingForOk = true;
+            }
+          }, 700);
+        }
       }
-    } else if (msg.startsWith("ERROR")) {
+    }
+
+    async function askNextNote() {
+      if (!isPlaying) return;
+      if (currentIndex >= currentNotesSeq.length) return;
+      const { nota } = currentNotesSeq[currentIndex];
+      currentNoteLarge.textContent = nota;
+      highlightKeyByNote(nota);
+      updateLearningProgress();
+      const sent = await sendNoteToESP(nota);
+      if (!sent) { instructionMsg.innerHTML = '⚠️ Error BLE'; isPlaying = false; return; }
+      waitingForOk = true;
+      instructionMsg.innerHTML = `🎹 Toca la tecla: ${nota}`;
+    }
+
+    async function startLearning() {
+      if (!connected) { alert("Connecta la placa primer"); return; }
+      if (!currentNotesSeq.length) { alert("Selecciona una cançó"); return; }
+      if (isPlaying) return;
+      currentIndex = 0;
       waitingForOk = false;
-      instructionMsg.innerHTML = '❌ Nota incorrecta, torna a tocar';
-      const wrongIdx = currentIndex;
-      if (wrongIdx < currentNotesSeq.length) {
-        const currentNotaFail = currentNotesSeq[wrongIdx].nota;
-        highlightKeyByNote(currentNotaFail);
-        setTimeout(() => {
-          if (isPlaying && currentIndex < currentNotesSeq.length && !waitingForOk) {
-            instructionMsg.innerHTML = `🎯 Toca: ${currentNotaFail}`;
-            sendNoteToESP(currentNotaFail);
-            waitingForOk = true;
-          }
-        }, 700);
+      isPlaying = true;
+      playPauseLearnBtn.innerHTML = '⏸';
+      updateLearningProgress();
+      await askNextNote();
+    }
+
+    function pauseLearning() {
+      isPlaying = false;
+      waitingForOk = false;
+      playPauseLearnBtn.innerHTML = '▶';
+      instructionMsg.innerHTML = '⏸ Pausat · prem Play';
+    }
+
+    function resetLearning() {
+      const wasPlaying = isPlaying;
+      if (wasPlaying) pauseLearning();
+      currentIndex = 0;
+      waitingForOk = false;
+      updateLearningProgress();
+      if (currentNotesSeq.length) {
+        currentNoteLarge.textContent = currentNotesSeq[0].nota;
+        highlightKeyByNote(currentNotesSeq[0].nota);
+      } else {
+        currentNoteLarge.textContent = '—';
+        highlightKeyByNote(null);
       }
+      if (wasPlaying) startLearning();
     }
-  }
 
-  async function askNextNote() {
-    if (!isPlaying) return;
-    if (currentIndex >= currentNotesSeq.length) return;
-    const { nota } = currentNotesSeq[currentIndex];
-    currentNoteLarge.textContent = nota;
-    highlightKeyByNote(nota);
-    updateLearningProgress();
-    const sent = await sendNoteToESP(nota);
-    if (!sent) { instructionMsg.innerHTML = '⚠️ Error BLE'; isPlaying = false; return; }
-    waitingForOk = true;
-    instructionMsg.innerHTML = `🎹 Toca la tecla: ${nota}`;
-  }
-
-  async function startLearning() {
-    if (!connected) { alert("Connecta la placa primer"); return; }
-    if (!currentNotesSeq.length) { alert("Selecciona una cançó"); return; }
-    if (isPlaying) return;
-    currentIndex = 0;
-    waitingForOk = false;
-    isPlaying = true;
-    playPauseLearnBtn.innerHTML = '⏸';
-    updateLearningProgress();
-    await askNextNote();
-  }
-
-  function pauseLearning() {
-    isPlaying = false;
-    waitingForOk = false;
-    playPauseLearnBtn.innerHTML = '▶';
-    instructionMsg.innerHTML = '⏸ Pausat · prem Play';
-  }
-
-  function resetLearning() {
-    const wasPlaying = isPlaying;
-    if (wasPlaying) pauseLearning();
-    currentIndex = 0;
-    waitingForOk = false;
-    updateLearningProgress();
-    if (currentNotesSeq.length) {
-      currentNoteLarge.textContent = currentNotesSeq[0].nota;
-      highlightKeyByNote(currentNotesSeq[0].nota);
-    } else {
-      currentNoteLarge.textContent = '—';
-      highlightKeyByNote(null);
+    // ----- Gestió cançons -----
+    function renderSongList() {
+      songsListContainer.innerHTML = '';
+      CANCONS_PRESET.forEach((song, idx) => {
+        const div = document.createElement('div');
+        div.className = 'song-item';
+        div.innerHTML = `<div class="song-info"><h4>${song.nom}</h4><span>${song.autor} · ${song.notes.length} notes</span></div><div>🎵</div>`;
+        div.addEventListener('click', () => {
+          currentSong = song;
+          currentNotesSeq = [...song.notes];
+          currentIndex = 0;
+          if (currentNotesSeq.length) currentNoteLarge.textContent = currentNotesSeq[0].nota;
+          updateLearningProgress();
+          nextToLearningBtn.disabled = false;
+          document.querySelectorAll('.song-item').forEach(el => el.style.borderColor = 'var(--border-light)');
+          div.style.borderColor = 'var(--accent)';
+        });
+        songsListContainer.appendChild(div);
+      });
     }
-    if (wasPlaying) startLearning();
-  }
 
-  // ----- Gestió cançons -----
-  function renderSongList() {
-    songsListContainer.innerHTML = '';
-    CANCONS_PRESET.forEach((song, idx) => {
-      const div = document.createElement('div');
-      div.className = 'song-item';
-      div.innerHTML = `<div class="song-info"><h4>${song.nom}</h4><span>${song.autor} · ${song.notes.length} notes</span></div><div>🎵</div>`;
-      div.addEventListener('click', () => {
-        currentSong = song;
-        currentNotesSeq = [...song.notes];
-        currentIndex = 0;
-        if (currentNotesSeq.length) currentNoteLarge.textContent = currentNotesSeq[0].nota;
-        updateLearningProgress();
-        nextToLearningBtn.disabled = false;
-        document.querySelectorAll('.song-item').forEach(el => el.style.borderColor = 'var(--border-light)');
-        div.style.borderColor = 'var(--accent)';
-      });
-      songsListContainer.appendChild(div);
-    });
-  }
-
-  function addMidiSong(nom, notesArray) {
-    const newSong = { nom, autor: 'MIDI importat', notes: notesArray };
-    CANCONS_PRESET.push(newSong);
-    renderSongList();
-    currentSong = newSong;
-    currentNotesSeq = [...notesArray];
-    currentIndex = 0;
-    updateLearningProgress();
-    nextToLearningBtn.disabled = false;
-  }
-
-  // ---- Bluetooth connection ----
-  async function connectBluetooth() {
-    try {
-      globalStatusText.innerText = 'Connectant...';
-      globalLed.classList.remove('connected');
-      const device = await navigator.bluetooth.requestDevice({
-        filters: [{ name: 'TeclatMusical' }],
-        optionalServices: ['0000ffe0-0000-1000-8000-00805f9b34fb']
-      });
-      btDevice = device;
-      device.addEventListener('gattserverdisconnected', () => onDisconnect());
-      const server = await device.gatt.connect();
-      const service = await server.getPrimaryService('0000ffe0-0000-1000-8000-00805f9b34fb');
-      btChar = await service.getCharacteristic('0000ffe1-0000-1000-8000-00805f9b34fb');
-      await btChar.startNotifications();
-      btChar.addEventListener('characteristicvaluechanged', (event) => {
-        const val = new TextDecoder().decode(event.target.value);
-        handleEspNotification(val);
-      });
-      connected = true;
-      globalStatusText.innerText = 'Connectat';
-      globalLed.classList.add('connected');
-      screenConnect.classList.add('hidden');
-      screenSongs.classList.remove('hidden');
-      screenLearning.classList.add('hidden');
+    function addMidiSong(nom, notesArray) {
+      const newSong = { nom, autor: 'MIDI importat', notes: notesArray };
+      CANCONS_PRESET.push(newSong);
       renderSongList();
-      if (CANCONS_PRESET.length) {
-        currentSong = CANCONS_PRESET[0];
-        currentNotesSeq = [...currentSong.notes];
-        currentIndex = 0;
-        updateLearningProgress();
-        nextToLearningBtn.disabled = false;
-      }
-    } catch(e) { globalStatusText.innerText = 'Error'; globalLed.classList.remove('connected'); alert("No s'ha pogut connectar"); }
-  }
-
-  function onDisconnect() {
-    connected = false;
-    btDevice = null; btChar = null;
-    globalStatusText.innerText = 'Desconnectat';
-    globalLed.classList.remove('connected');
-    if (!screenConnect.classList.contains('hidden')) return;
-    screenConnect.classList.remove('hidden');
-    screenSongs.classList.add('hidden');
-    screenLearning.classList.add('hidden');
-    if (isPlaying) pauseLearning();
-  }
-
-  function disconnectFull() {
-    if (btDevice && btDevice.gatt.connected) btDevice.gatt.disconnect();
-    onDisconnect();
-  }
-
-  // ---- Event Listeners ----
-  document.getElementById('connectScreenBtn').addEventListener('click', connectBluetooth);
-  disconnectFromSongs.addEventListener('click', disconnectFull);
-  disconnectFromLearn.addEventListener('click', disconnectFull);
-  backToSongsFromLearn.addEventListener('click', () => {
-    if (isPlaying) pauseLearning();
-    screenLearning.classList.add('hidden');
-    screenSongs.classList.remove('hidden');
-    renderSongList();
-  });
-  nextToLearningBtn.addEventListener('click', () => {
-    if (!currentSong) return;
-    screenSongs.classList.add('hidden');
-    screenLearning.classList.remove('hidden');
-    renderVirtualKeyboard();
-    if (currentNotesSeq.length) {
-      currentNoteLarge.textContent = currentNotesSeq[0]?.nota || '—';
-      highlightKeyByNote(currentNotesSeq[0]?.nota);
+      currentSong = newSong;
+      currentNotesSeq = [...notesArray];
+      currentIndex = 0;
+      updateLearningProgress();
+      nextToLearningBtn.disabled = false;
     }
-    updateLearningProgress();
-    if (isPlaying) pauseLearning();
-    isPlaying = false;
-    waitingFor
+
+    // ---- Bluetooth connection ----
+    async function connectBluetooth() {
+      try {
+        globalStatusText.innerText = 'Connectant...';
+        globalLed.classList.remove('connected');
+        const device = await navigator.bluetooth.requestDevice({
+          filters: [{ name: 'TeclatMusical' }],
+          optionalServices: ['0000ffe0-0000-1000-8000-00805f9b34fb']
+        });
+        btDevice = device;
+        device.addEventListener('gattserverdisconnected', () => onDisconnect());
+        const server = await device.gatt.connect();
+        const service = await server.getPrimaryService('0000ffe0-0000-1000-8000-00805f9b34fb');
+        btChar = await service.getCharacteristic('0000ffe1-0000-1000-8000-00805f9b34fb');
+        await btChar.startNotifications();
+        btChar.addEventListener('characteristicvaluechanged', (event) => {
+          const val = new TextDecoder().decode(event.target.value);
+          handleEspNotification(val);
+        });
+        connected = true;
+        globalStatusText.innerText = 'Connectat';
+        globalLed.classList.add('connected');
+        screenConnect.classList.add('hidden');
+        screenSongs.classList.remove('hidden');
+        screenLearning.classList.add('hidden');
+        renderSongList();
+        if (CANCONS_PRESET.length) {
+          currentSong = CANCONS_PRESET[0];
+          currentNotesSeq = [...currentSong.notes];
+          currentIndex = 0;
+          updateLearningProgress();
+          nextToLearningBtn.disabled = false;
+        }
+      } catch(e) { globalStatusText.innerText = 'Error'; globalLed.classList.remove('connected'); alert("No s'ha pogut connectar"); }
+    }
+
+    function onDisconnect() {
+      connected = false;
+      btDevice = null; btChar = null;
+      globalStatusText.innerText = 'Desconnectat';
+      globalLed.classList.remove('connected');
+      if (!screenConnect.classList.contains('hidden')) return;
+      screenConnect.classList.remove('hidden');
+      screenSongs.classList.add('hidden');
+      screenLearning.classList.add('hidden');
+      if (isPlaying) pauseLearning();
+    }
+
+    function disconnectFull() {
+      if (btDevice && btDevice.gatt.connected) btDevice.gatt.disconnect();
+      onDisconnect();
+    }
+
+    // ---- Event Listeners ----
+    document.getElementById('connectScreenBtn').addEventListener('click', connectBluetooth);
+    disconnectFromSongs.addEventListener('click', disconnectFull);
+    disconnectFromLearn.addEventListener('click', disconnectFull);
+    backToSongsFromLearn.addEventListener('click', () => {
+      if (isPlaying) pauseLearning();
+      screenLearning.classList.add('hidden');
+      screenSongs.classList.remove('hidden');
+      renderSongList();
+    });
+    nextToLearningBtn.addEventListener('click', () => {
+      if (!currentSong) return;
+      screenSongs.classList.add('hidden');
+      screenLearning.classList.remove('hidden');
+      renderVirtualKeyboard();
+      if (currentNotesSeq.length) {
+        currentNoteLarge.textContent = currentNotesSeq[0]?.nota || '—';
+       
