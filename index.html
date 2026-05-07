@@ -1,798 +1,740 @@
 <!DOCTYPE html>
 <html lang="ca">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
-<title>TeclaLux · Aprenentatge Professional</title>
-<link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,300;14..32,400;14..32,500;14..32,600;14..32,700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
-<style>
-  * {
-    margin: 0;
-    padding: 0;
-    box-sizing: border-box;
-  }
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+  <title>TeclaLux Studio — Aprenentatge Interactiu</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,300;14..32,400;14..32,500;14..32,600;14..32,700&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
 
-  :root {
-    --bg-deep: #020617;
-    --surface-card: #0f172a;
-    --surface-elevated: #1e293b;
-    --border-light: #334155;
-    --accent: #2dd4bf;
-    --accent-glow: rgba(45,212,191,0.3);
-    --accent-soft: #134e4a;
-    --text-primary: #f1f5f9;
-    --text-secondary: #94a3b8;
-    --text-muted: #475569;
-    --success: #4ade80;
-    --error: #f87171;
-  }
+    :root {
+      --bg-deep: #050507;
+      --surface-elevated: #0c0c12;
+      --surface-card: #12121c;
+      --border-subtle: #22222e;
+      --border-glow: #2e2e42;
+      --green-primary: #10d48e;
+      --green-glow: rgba(16, 212, 142, 0.4);
+      --green-dim: rgba(16, 212, 142, 0.12);
+      --amber-accent: #ffb347;
+      --text-main: #f0f3fa;
+      --text-muted: #8a8aa8;
+      --font-sans: 'Inter', system-ui, -apple-system, sans-serif;
+      --font-mono: 'Space Mono', monospace;
+    }
 
-  body {
-    background: var(--bg-deep);
-    font-family: 'Inter', sans-serif;
-    color: var(--text-primary);
-    min-height: 100vh;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    padding: 1.5rem;
-    background-image: radial-gradient(circle at 15% 30%, rgba(45,212,191,0.05) 0%, transparent 70%);
-  }
+    body {
+      background: var(--bg-deep);
+      color: var(--text-main);
+      font-family: var(--font-sans);
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+      position: relative;
+    }
 
-  /* APP CONTAINER */
-  .app {
-    max-width: 700px;
-    width: 100%;
-    margin: 0 auto;
-  }
+    body::before {
+      content: '';
+      position: fixed;
+      inset: 0;
+      background: radial-gradient(circle at 30% 10%, rgba(16, 212, 142, 0.08), transparent 70%);
+      pointer-events: none;
+      z-index: 0;
+    }
 
-  /* Pantalles */
-  .screen {
-    transition: opacity 0.25s ease;
-  }
+    /* app container */
+    .app {
+      max-width: 560px;
+      width: 100%;
+      margin: 0 auto;
+      position: relative;
+      z-index: 2;
+    }
 
-  .hidden {
-    display: none;
-  }
+    /* pantalles */
+    .screen {
+      transition: opacity 0.3s ease, transform 0.2s ease;
+    }
 
-  /* Branding comú */
-  .brand-header {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    margin-bottom: 2rem;
-    flex-wrap: wrap;
-    gap: 1rem;
-  }
+    .screen.hidden {
+      display: none;
+    }
 
-  .logo-badge {
-    display: flex;
-    align-items: center;
-    gap: 12px;
-  }
+    /* targetes premium */
+    .lux-card {
+      background: var(--surface-card);
+      border: 1px solid var(--border-subtle);
+      border-radius: 32px;
+      backdrop-filter: blur(2px);
+      box-shadow: 0 20px 35px -12px rgba(0, 0, 0, 0.5), inset 0 1px 0 rgba(255, 255, 255, 0.03);
+      padding: 28px 24px;
+      transition: all 0.2s;
+    }
 
-  .icon-logo {
-    width: 48px;
-    height: 48px;
-    background: linear-gradient(145deg, #2dd4bf, #0f766e);
-    border-radius: 18px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 28px;
-    box-shadow: 0 10px 20px rgba(0,0,0,0.3);
-  }
+    .btn-lux {
+      width: 100%;
+      padding: 14px 20px;
+      border-radius: 48px;
+      font-weight: 600;
+      font-size: 16px;
+      border: none;
+      cursor: pointer;
+      font-family: var(--font-sans);
+      transition: 0.2s;
+      background: rgba(255, 255, 255, 0.05);
+      color: var(--text-main);
+      border: 1px solid var(--border-subtle);
+    }
 
-  .title-text h2 {
-    font-size: 1.6rem;
-    font-weight: 700;
-    letter-spacing: -0.02em;
-    background: linear-gradient(135deg, #fff, #99f6e4);
-    background-clip: text;
-    -webkit-background-clip: text;
-    color: transparent;
-  }
+    .btn-primary {
+      background: var(--green-primary);
+      color: #08080e;
+      border: none;
+      font-weight: 700;
+      box-shadow: 0 4px 12px rgba(16, 212, 142, 0.3);
+    }
 
-  .title-text p {
-    font-size: 0.7rem;
-    color: var(--text-secondary);
-  }
+    .btn-primary:hover {
+      background: #0bc77e;
+      transform: translateY(-2px);
+      box-shadow: 0 8px 20px rgba(16, 212, 142, 0.4);
+    }
 
-  .status-chip {
-    background: rgba(30, 41, 59, 0.7);
-    backdrop-filter: blur(8px);
-    padding: 0.4rem 1rem;
-    border-radius: 60px;
-    font-size: 0.7rem;
-    font-weight: 500;
-    display: flex;
-    align-items: center;
-    gap: 6px;
-    border: 1px solid var(--border-light);
-  }
+    .btn-outline {
+      background: transparent;
+      border: 1px solid var(--border-subtle);
+    }
 
-  .led-status {
-    width: 10px;
-    height: 10px;
-    border-radius: 10px;
-    background: #475569;
-    transition: all 0.2s;
-  }
+    .btn-outline:hover {
+      border-color: var(--green-primary);
+      color: var(--green-primary);
+    }
 
-  .led-status.connected {
-    background: var(--accent);
-    box-shadow: 0 0 8px var(--accent);
-    animation: pulse 1.8s infinite;
-  }
+    .btn-danger {
+      border-color: #ff5e5e30;
+      color: #ff9e8f;
+    }
+    .btn-danger:hover {
+      border-color: #ff5e5e;
+      color: #ffae9e;
+    }
 
-  @keyframes pulse {
-    0% { opacity: 0.5; box-shadow: 0 0 0 0 var(--accent-glow); }
-    100% { opacity: 1; box-shadow: 0 0 0 4px transparent; }
-  }
+    /* barra estat BT */
+    .bt-status-bar {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      background: var(--surface-elevated);
+      border-radius: 60px;
+      padding: 8px 18px;
+      margin-bottom: 24px;
+      border: 1px solid var(--border-subtle);
+    }
+    .bt-led {
+      width: 10px;
+      height: 10px;
+      border-radius: 10px;
+      background: #4a4a6a;
+      transition: 0.2s;
+    }
+    .bt-led.connected {
+      background: var(--green-primary);
+      box-shadow: 0 0 8px var(--green-primary);
+    }
+    .bt-led.connecting {
+      background: var(--amber-accent);
+      animation: pulse 1s infinite;
+    }
+    @keyframes pulse {
+      0% { opacity: 0.4; transform: scale(0.9);}
+      100% { opacity: 1; transform: scale(1.2);}
+    }
 
-  /* Cards */
-  .card {
-    background: var(--surface-card);
-    border: 1px solid var(--border-light);
-    border-radius: 2rem;
-    padding: 1.8rem;
-    backdrop-filter: blur(2px);
-  }
+    /* llista cançons */
+    .song-grid {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      margin: 16px 0 20px;
+      max-height: 340px;
+      overflow-y: auto;
+      padding-right: 4px;
+    }
+    .song-card {
+      background: var(--surface-elevated);
+      border-radius: 24px;
+      padding: 14px 18px;
+      border: 1px solid var(--border-subtle);
+      cursor: pointer;
+      transition: all 0.2s;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+    .song-card:hover {
+      border-color: var(--green-primary);
+      background: var(--green-dim);
+      transform: translateX(4px);
+    }
+    .song-card.selected {
+      border-color: var(--green-primary);
+      background: var(--green-dim);
+      box-shadow: 0 0 0 1px var(--green-primary) inset;
+    }
+    .song-info h4 {
+      font-weight: 600;
+      font-size: 16px;
+    }
+    .song-info p {
+      font-size: 12px;
+      color: var(--text-muted);
+      font-family: var(--font-mono);
+      margin-top: 4px;
+    }
+    .upload-zone-modern {
+      border: 1.5px dashed var(--border-subtle);
+      border-radius: 28px;
+      padding: 16px;
+      text-align: center;
+      transition: 0.2s;
+      cursor: pointer;
+      margin-top: 12px;
+    }
+    .upload-zone-modern:hover {
+      border-color: var(--green-primary);
+      background: var(--green-dim);
+    }
 
-  .btn-primary {
-    background: var(--accent);
-    border: none;
-    width: 100%;
-    padding: 1rem;
-    border-radius: 60px;
-    font-weight: 700;
-    font-size: 1rem;
-    font-family: inherit;
-    color: #022c2a;
-    cursor: pointer;
-    transition: all 0.2s;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 10px;
-    box-shadow: 0 4px 12px rgba(0,0,0,0.3);
-  }
+    /* teclat visual (tira LED simulada) */
+    .led-panel {
+      background: var(--surface-elevated);
+      border-radius: 28px;
+      padding: 18px 12px;
+      margin: 16px 0;
+    }
+    .led-strip-premium {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      justify-content: center;
+    }
+    .led-key {
+      text-align: center;
+      width: 44px;
+    }
+    .led-circle {
+      width: 40px;
+      height: 40px;
+      background: #1e1e2c;
+      border-radius: 40px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-family: var(--font-mono);
+      font-size: 14px;
+      font-weight: 600;
+      color: var(--text-muted);
+      border: 1px solid var(--border-subtle);
+      transition: 0.1s;
+      margin-bottom: 6px;
+    }
+    .led-circle.active {
+      background: var(--green-primary);
+      box-shadow: 0 0 18px var(--green-primary);
+      color: #000;
+      border-color: var(--green-primary);
+      transform: scale(1.02);
+    }
+    .led-label-small {
+      font-size: 10px;
+      color: var(--text-muted);
+      font-family: var(--font-mono);
+    }
 
-  .btn-primary:hover {
-    transform: translateY(-2px);
-    background: #2bc5b0;
-    box-shadow: 0 10px 20px rgba(45,212,191,0.25);
-  }
+    .nota-hero {
+      background: var(--surface-elevated);
+      border-radius: 40px;
+      padding: 18px 24px;
+      text-align: center;
+      margin: 20px 0;
+    }
+    .big-note {
+      font-family: var(--font-mono);
+      font-size: 48px;
+      font-weight: 700;
+      letter-spacing: 4px;
+      color: var(--green-primary);
+      text-shadow: 0 0 6px var(--green-glow);
+    }
 
-  .btn-secondary {
-    background: transparent;
-    border: 1px solid var(--border-light);
-    padding: 0.75rem 1.2rem;
-    border-radius: 40px;
-    color: var(--text-primary);
-    font-weight: 500;
-    cursor: pointer;
-    transition: all 0.2s;
-  }
+    .progress-track {
+      background: var(--border-subtle);
+      border-radius: 12px;
+      height: 6px;
+      overflow: hidden;
+      margin: 16px 0;
+    }
+    .progress-fill-lux {
+      background: var(--green-primary);
+      width: 0%;
+      height: 100%;
+      transition: width 0.2s ease;
+      border-radius: 12px;
+    }
 
-  .btn-secondary:hover {
-    border-color: var(--accent);
-    color: var(--accent);
-    background: rgba(45,212,191,0.08);
-  }
+    .speed-row {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      background: var(--surface-elevated);
+      padding: 12px 18px;
+      border-radius: 60px;
+      margin-top: 12px;
+    }
+    input[type=range] {
+      flex: 1;
+      accent-color: var(--green-primary);
+      height: 4px;
+    }
 
-  .btn-danger-outline {
-    background: transparent;
-    border: 1px solid #7f1a1a;
-    color: #fca5a5;
-    border-radius: 40px;
-    padding: 0.7rem 1rem;
-    font-weight: 500;
-    cursor: pointer;
-  }
+    .bottom-actions {
+      display: flex;
+      gap: 12px;
+      margin-top: 22px;
+    }
 
-  .btn-danger-outline:hover {
-    background: rgba(248, 113, 113, 0.1);
-    border-color: #f87171;
-  }
+    hr {
+      border-color: var(--border-subtle);
+      margin: 16px 0;
+    }
 
-  /* Llista cançons */
-  .songs-list {
-    display: flex;
-    flex-direction: column;
-    gap: 12px;
-    margin: 1.8rem 0 1rem;
-  }
-
-  .song-item {
-    background: var(--surface-elevated);
-    border-radius: 1.5rem;
-    padding: 1rem 1.2rem;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    cursor: pointer;
-    border: 1px solid var(--border-light);
-    transition: all 0.2s;
-  }
-
-  .song-item:hover {
-    border-color: var(--accent);
-    transform: translateX(6px);
-  }
-
-  .song-info h4 {
-    font-weight: 600;
-    font-size: 1rem;
-  }
-  .song-info span {
-    font-size: 0.7rem;
-    color: var(--text-muted);
-  }
-
-  .midi-upload {
-    background: var(--surface-elevated);
-    border-radius: 60px;
-    padding: 0.8rem 1.2rem;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    border: 1px dashed var(--border-light);
-    cursor: pointer;
-    margin-top: 1rem;
-  }
-
-  /* Pantalla d'aprenentatge (tecles + progressió) */
-  .learning-area {
-    background: var(--surface-card);
-    border-radius: 2rem;
-    padding: 1.5rem;
-    border: 1px solid var(--border-light);
-  }
-
-  .big-note {
-    font-family: 'JetBrains Mono', monospace;
-    font-size: 3.2rem;
-    text-align: center;
-    font-weight: 700;
-    color: var(--accent);
-    text-shadow: 0 0 8px rgba(45,212,191,0.4);
-    letter-spacing: 2px;
-    margin-bottom: 0.5rem;
-  }
-
-  .progress-text {
-    display: flex;
-    justify-content: space-between;
-    font-size: 0.7rem;
-    color: var(--text-secondary);
-    margin-bottom: 6px;
-  }
-
-  .progress-bar-container {
-    background: var(--surface-elevated);
-    border-radius: 20px;
-    height: 6px;
-    overflow: hidden;
-    margin-bottom: 1rem;
-  }
-
-  .progress-fill {
-    width: 0%;
-    height: 100%;
-    background: var(--accent);
-    border-radius: 20px;
-    transition: width 0.2s;
-  }
-
-  .transport-row {
-    display: flex;
-    justify-content: center;
-    gap: 24px;
-    margin: 1rem 0;
-  }
-
-  .circle-btn {
-    background: var(--surface-elevated);
-    border: none;
-    width: 60px;
-    height: 60px;
-    border-radius: 60px;
-    font-size: 1.8rem;
-    cursor: pointer;
-    transition: all 0.1s;
-    color: white;
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-  }
-
-  .circle-btn.primary {
-    background: var(--accent);
-    color: #022c2a;
-    box-shadow: 0 4px 12px rgba(45,212,191,0.3);
-  }
-
-  .virtual-keys {
-    display: flex;
-    flex-wrap: wrap;
-    justify-content: center;
-    gap: 8px;
-    margin: 1.5rem 0 0.8rem;
-  }
-
-  .key {
-    background: #0f172a;
-    border-radius: 16px;
-    padding: 8px 0;
-    min-width: 48px;
-    text-align: center;
-    font-family: monospace;
-    font-weight: 500;
-    font-size: 0.75rem;
-    border: 1px solid #2d3a48;
-    color: #9ca3af;
-    transition: 0.07s linear;
-  }
-
-  .key.lit {
-    background: var(--accent);
-    border-color: var(--accent);
-    color: #011010;
-    box-shadow: 0 0 12px var(--accent);
-    transform: scale(1.02);
-  }
-
-  .speed-control {
-    background: var(--surface-elevated);
-    border-radius: 60px;
-    padding: 0.6rem 1rem;
-    display: flex;
-    align-items: center;
-    gap: 16px;
-    margin-top: 0.8rem;
-  }
-
-  input[type="range"] {
-    flex: 1;
-    height: 4px;
-    -webkit-appearance: none;
-    background: #334155;
-    border-radius: 4px;
-  }
-  input[type="range"]:focus {
-    outline: none;
-  }
-  input[type="range"]::-webkit-slider-thumb {
-    width: 18px;
-    height: 18px;
-    background: var(--accent);
-    border-radius: 50%;
-    cursor: pointer;
-    -webkit-appearance: none;
-  }
-  .action-buttons-row {
-    display: flex;
-    gap: 12px;
-    margin-top: 1.2rem;
-    justify-content: space-between;
-  }
-</style>
+    .badge-tecla {
+      font-size: 12px;
+      background: rgba(16,212,142,0.2);
+      display: inline-block;
+      padding: 2px 12px;
+      border-radius: 40px;
+      color: var(--green-primary);
+    }
+  </style>
 </head>
 <body>
 <div class="app">
-  <!-- Header comú (status) -->
-  <div class="brand-header">
-    <div class="logo-badge">
-      <div class="icon-logo">🔹</div>
-      <div class="title-text">
-        <h2>TeclaLux</h2>
-        <p>LED Learning System</p>
-      </div>
-    </div>
-    <div class="status-chip" id="globalStatus">
-      <div class="led-status" id="globalLed"></div>
-      <span id="globalStatusText">Desconnectat</span>
-    </div>
-  </div>
 
   <!-- PANTALLA 1: CONNEXIÓ -->
-  <div id="screenConnect" class="screen">
-    <div class="card" style="text-align: center;">
-      <div style="font-size: 3rem; margin-bottom: 1rem;">🎹</div>
-      <h3 style="margin-bottom: 0.5rem;">Connecta el teu TeclaLux</h3>
-      <p style="color: var(--text-secondary); font-size: 0.85rem; margin-bottom: 2rem;">Assegura't que l'ESP32 està encès amb el nom "TeclatMusical"</p>
-      <button id="connectScreenBtn" class="btn-primary">⚡ Connectar per Bluetooth</button>
-      <p style="font-size: 0.7rem; margin-top: 1.5rem; color: #475569;">La placa guiarà els LEDs mentre aprens</p>
+  <div id="screenConnect" class="screen lux-card" style="text-align: center;">
+    <div style="margin-bottom: 28px;">
+      <span style="font-size: 56px;">🎹</span>
+      <h1 style="font-size: 28px; margin-top: 10px; letter-spacing: -0.5px;">TeclaLux<span style="color: var(--green-primary);"> Studio</span></h1>
+      <p style="color: var(--text-muted); margin-top: 8px;">aprenentatge actiu · LED interactiu</p>
     </div>
+    <div class="bt-status-bar" style="justify-content: center; background: var(--surface-card);">
+      <div id="connLed" class="bt-led"></div>
+      <span id="connStatusText" style="font-weight: 500;">Desconnectat</span>
+    </div>
+    <button id="mainConnectBtn" class="btn-lux btn-primary" style="margin-bottom: 12px;">🔗 Connectar TeclaLux</button>
+    <p style="font-size: 12px; color: var(--text-muted); margin-top: 20px;">assegura't que l'ESP32 està encès<br>amb nom "TeclatMusical"</p>
   </div>
 
-  <!-- PANTALLA 2: SELECCIÓ DE CANÇÓ -->
-  <div id="screenSongs" class="screen hidden">
-    <div class="card">
-      <div style="display: flex; justify-content: space-between; align-items: center;">
-        <h3>📚 Biblioteca</h3>
-        <button id="disconnectFromSongs" class="btn-danger-outline" style="padding: 0.4rem 1rem;">Desconnectar</button>
+  <!-- PANTALLA 2: SELECCIÓ CANÇÓ / MIDI -->
+  <div id="screenSongs" class="screen hidden lux-card">
+    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 18px;">
+      <div>
+        <span class="badge-tecla">🎵 BIBLIOTECA</span>
+        <h2 style="margin-top: 6px;">Tria la teva cançó</h2>
       </div>
-      <div id="songsListContainer" class="songs-list"></div>
-      <div id="midiUploadZone" class="midi-upload">
-        <span>🎵 Pujar arxiu MIDI</span>
-        <span style="color: var(--accent);">+</span>
-        <input type="file" id="midiFileInput" accept=".mid,.midi" style="display: none;">
-      </div>
-      <button id="nextToLearningBtn" class="btn-primary" style="margin-top: 1.5rem;" disabled>▶ Continuar a l'aprenentatge</button>
+      <button id="disconnectFromSongsBtn" class="btn-lux" style="width: auto; padding: 8px 16px; background: #1e1e2c;">🔌</button>
     </div>
+
+    <div class="song-grid" id="songLibraryContainer"></div>
+
+    <label class="upload-zone-modern" id="midiUploadLabel">
+      <input type="file" id="midiFileInput" accept=".mid,.midi" style="display: none;">
+      <span style="font-size: 28px;">📂</span><br>
+      <span style="font-size: 13px;">Puja un fitxer <strong style="color: var(--green-primary);">MIDI</strong> propi</span>
+    </label>
+
+    <div class="bottom-actions">
+      <button id="openPlayerBtn" class="btn-lux btn-primary" disabled>▶  Iniciar Pràctica</button>
+      <button id="backToConnectFromSongs" class="btn-lux btn-outline">⤺ Desconnectar i tornar</button>
+    </div>
+    <p id="songSelectHint" style="font-size: 11px; color: var(--text-muted); margin-top: 14px; text-align: center;">* selecciona una cançó per activar el botó</p>
   </div>
 
-  <!-- PANTALLA 3: APRENENTATGE (NOTES + VELOCITAT + LEDS) -->
-  <div id="screenLearning" class="screen hidden">
-    <div class="learning-area">
-      <div class="big-note" id="currentNoteLarge">—</div>
-      <div class="progress-text">
-        <span id="progressCountLabel">0 / 0</span>
-        <span id="instructionMsg">🎯 Prem la nota il·luminada</span>
+  <!-- PANTALLA 3: PLAYER INTERACTIU (NOTES + VELOCITAT + LEDS) -->
+  <div id="screenPlayer" class="screen hidden lux-card">
+    <div style="display: flex; justify-content: space-between; align-items: baseline; flex-wrap: wrap;">
+      <div>
+        <span class="badge-tecla">🎶 SESSIÓ ACTIVA</span>
+        <h3 id="playerSongTitle" style="margin-top: 6px;">Cançó</h3>
       </div>
-      <div class="progress-bar-container"><div class="progress-fill" id="learningProgressFill"></div></div>
-      <div class="transport-row">
-        <button class="circle-btn" id="playPauseLearnBtn">▶</button>
-        <button class="circle-btn" id="resetLearnBtn">↺</button>
+      <button id="exitToSongsBtn" class="btn-lux" style="width: auto; padding: 8px 16px; background: #1e1e2c;" title="Tornar a cançons">📁 Cançons</button>
+    </div>
+
+    <!-- LEDs simulats -->
+    <div class="led-panel">
+      <div class="led-strip-premium" id="ledVisualStrip"></div>
+    </div>
+
+    <!-- Nota actual + estat -->
+    <div class="nota-hero">
+      <div class="big-note" id="playerCurrentNote">—</div>
+      <div id="playerStateMessage" style="font-size: 14px; font-weight: 400; margin-top: 6px; color: var(--amber-accent);">⏳ esperant resposta</div>
+      <div class="progress-track"><div class="progress-fill-lux" id="playerProgressFill"></div></div>
+      <div style="display: flex; justify-content: space-between; font-size: 12px; font-family: var(--font-mono);">
+        <span id="playerNoteCounter">0 / 0</span>
+        <span id="playerStatusBadge">🎯 mode aprenentatge</span>
       </div>
-      <div id="visualKeyboardContainer" class="virtual-keys"></div>
-      <div class="speed-control">
-        <span style="font-size: 0.75rem;">⚡ Tempo</span>
-        <input type="range" id="tempoSlider" min="0.5" max="2.0" step="0.1" value="1.0">
-        <span id="tempoValue" style="font-family: monospace; min-width: 40px;">1.0x</span>
-      </div>
-      <div class="action-buttons-row">
-        <button id="backToSongsFromLearn" class="btn-secondary">↺ Canviar cançó</button>
-        <button id="disconnectFromLearn" class="btn-danger-outline">🔌 Desconnectar</button>
-      </div>
+    </div>
+
+    <!-- controls reproducció + velocitat -->
+    <div style="display: flex; gap: 12px; justify-content: center;">
+      <button id="playerPlayPauseBtn" class="btn-lux" style="width: 70px;">▶</button>
+      <button id="playerResetBtn" class="btn-lux btn-outline">↺ Reiniciar</button>
+    </div>
+
+    <div class="speed-row">
+      <span style="font-size: 13px;">⚡ velocitat</span>
+      <input type="range" id="playerSpeedSlider" min="0.3" max="2.5" step="0.05" value="1.0">
+      <span id="playerSpeedVal" style="font-family: monospace; min-width: 48px;">×1.00</span>
+    </div>
+
+    <div class="bottom-actions">
+      <button id="disconnectFromPlayerBtn" class="btn-lux btn-danger" style="background: transparent;">🔌 Desconnectar placa</button>
+      <button id="backToLibraryFromPlayer" class="btn-lux btn-outline">← Seleccionar una altra cançó</button>
     </div>
   </div>
 </div>
 
 <script src="https://cdn.jsdelivr.net/npm/midi-parser-js@4.0.6/src/midi-parser.js"></script>
 <script>
-  // ---------- CONSTANTS I NOTES ----------
-  const NOTES_BLANQUES = [
-    'DO4','RE4','MI4','FA4','SOL4','LA4','SI4',
-    'DO5','RE5','MI5','FA5','SOL5','LA5','SI5',
-    'DO6','RE6','MI6','FA6','SOL6','LA6','SI6','DO7'
-  ];
+  // ---------- CONSTANTS GLOBALS ----------
+  const NOTES_BLANQUES = ['DO4','RE4','MI4','FA4','SOL4','LA4','SI4','DO5','RE5','MI5','FA5','SOL5','LA5','SI5','DO6','RE6','MI6','FA6','SOL6','LA6','SI6','DO7'];
   const MIDI_BASE = {0:'DO',1:'DO#',2:'RE',3:'RE#',4:'MI',5:'FA',6:'FA#',7:'SOL',8:'SOL#',9:'LA',10:'LA#',11:'SI'};
   const BLANQUES_SET = new Set(['DO','RE','MI','FA','SOL','LA','SI']);
   const MIDI_A_NOTA = {};
-  for (let midi = 48; midi <= 96; midi++) {
-    const nom = MIDI_BASE[midi % 12];
-    const octava = Math.floor(midi / 12) - 1;
+  for (let m = 48; m <= 96; m++) {
+    let nom = MIDI_BASE[m % 12];
+    let oct = Math.floor(m / 12) - 1;
     if (BLANQUES_SET.has(nom)) {
-      const notaCompleta = nom + octava;
-      if (NOTES_BLANQUES.includes(notaCompleta)) MIDI_A_NOTA[midi] = notaCompleta;
+      let full = nom + oct;
+      if (NOTES_BLANQUES.includes(full)) MIDI_A_NOTA[m] = full;
     }
   }
 
-  // ---------- ESTAT GLOBAL ----------
-  let btDevice = null, btChar = null;
-  let connected = false;
-  let currentSong = null;
-  let currentNotesSeq = [];   // array de {nota, dur}
-  let currentIndex = 0;
-  let isPlaying = false;
-  let waitingForOk = false;
-  let tempoMultiplier = 1.0;
+  // estat global
+  let btDevice = null;
+  let btCharacteristic = null;
+  let isConnected = false;
 
-  // Cançons predefinides
-  let CANCONS_PRESET = [
-    { nom: 'Cumpleaños Feliz', autor: 'Tradicional', notes: [
-      {nota:'DO4',dur:400},{nota:'DO4',dur:200},{nota:'RE4',dur:600},{nota:'DO4',dur:600},{nota:'FA4',dur:600},{nota:'MI4',dur:1200},
-      {nota:'DO4',dur:400},{nota:'DO4',dur:200},{nota:'RE4',dur:600},{nota:'DO4',dur:600},{nota:'SOL4',dur:600},{nota:'FA4',dur:1200},
-      {nota:'DO4',dur:400},{nota:'DO4',dur:200},{nota:'DO5',dur:600},{nota:'LA4',dur:600},{nota:'FA4',dur:600},{nota:'MI4',dur:600},{nota:'RE4',dur:600},
-      {nota:'SI4',dur:400},{nota:'SI4',dur:200},{nota:'LA4',dur:600},{nota:'FA4',dur:600},{nota:'SOL4',dur:600},{nota:'FA4',dur:1200}
-    ] },
-    { nom: 'Oda a l\'Alegria', autor: 'Beethoven', notes: [
-      {nota:'MI4',dur:400},{nota:'MI4',dur:400},{nota:'FA4',dur:400},{nota:'SOL4',dur:400},{nota:'SOL4',dur:400},{nota:'FA4',dur:400},{nota:'MI4',dur:400},{nota:'RE4',dur:400},
-      {nota:'DO4',dur:400},{nota:'DO4',dur:400},{nota:'RE4',dur:400},{nota:'MI4',dur:400},{nota:'MI4',dur:600},{nota:'RE4',dur:200},{nota:'RE4',dur:800},
-      {nota:'MI4',dur:400},{nota:'MI4',dur:400},{nota:'FA4',dur:400},{nota:'SOL4',dur:400},{nota:'SOL4',dur:400},{nota:'FA4',dur:400},{nota:'MI4',dur:400},{nota:'RE4',dur:400},
-      {nota:'DO4',dur:400},{nota:'DO4',dur:400},{nota:'RE4',dur:400},{nota:'MI4',dur:400},{nota:'RE4',dur:600},{nota:'DO4',dur:200},{nota:'DO4',dur:800}
-    ] }
+  let currentSong = null;          // { nom, autor, notes: [{nota,dur}] }
+  let sequenceNotes = [];
+  let currentNoteIndex = 0;
+  let isPlaying = false;
+  let waitingForESP = false;
+  let playSpeed = 1.0;
+  let currentLedIndex = -1;
+
+  // presets
+  let presetSongs = [
+    { nom: "Cumpleaños Feliz", autor: "Tradicional", notes: [{nota:'DO4',dur:400},{nota:'DO4',dur:200},{nota:'RE4',dur:600},{nota:'DO4',dur:600},{nota:'FA4',dur:600},{nota:'MI4',dur:1200},{nota:'DO4',dur:400},{nota:'DO4',dur:200},{nota:'RE4',dur:600},{nota:'DO4',dur:600},{nota:'SOL4',dur:600},{nota:'FA4',dur:1200},{nota:'DO4',dur:400},{nota:'DO4',dur:200},{nota:'DO5',dur:600},{nota:'LA4',dur:600},{nota:'FA4',dur:600},{nota:'MI4',dur:600},{nota:'RE4',dur:600},{nota:'SI4',dur:400},{nota:'SI4',dur:200},{nota:'LA4',dur:600},{nota:'FA4',dur:600},{nota:'SOL4',dur:600},{nota:'FA4',dur:1200}] },
+    { nom: "Oda a l'Alegria", autor: "Beethoven", notes: [{nota:'MI4',dur:400},{nota:'MI4',dur:400},{nota:'FA4',dur:400},{nota:'SOL4',dur:400},{nota:'SOL4',dur:400},{nota:'FA4',dur:400},{nota:'MI4',dur:400},{nota:'RE4',dur:400},{nota:'DO4',dur:400},{nota:'DO4',dur:400},{nota:'RE4',dur:400},{nota:'MI4',dur:400},{nota:'MI4',dur:600},{nota:'RE4',dur:200},{nota:'RE4',dur:800},{nota:'MI4',dur:400},{nota:'MI4',dur:400},{nota:'FA4',dur:400},{nota:'SOL4',dur:400},{nota:'SOL4',dur:400},{nota:'FA4',dur:400},{nota:'MI4',dur:400},{nota:'RE4',dur:400},{nota:'DO4',dur:400},{nota:'DO4',dur:400},{nota:'RE4',dur:400},{nota:'MI4',dur:400},{nota:'RE4',dur:600},{nota:'DO4',dur:200},{nota:'DO4',dur:800}] }
   ];
 
-  // DOM elements screens
-  const screenConnect = document.getElementById('screenConnect');
-  const screenSongs = document.getElementById('screenSongs');
-  const screenLearning = document.getElementById('screenLearning');
-  const globalLed = document.getElementById('globalLed');
-  const globalStatusText = document.getElementById('globalStatusText');
+  let selectedSongId = null;
 
-  // Elements pantalla cançons
-  const songsListContainer = document.getElementById('songsListContainer');
-  const midiUploadZone = document.getElementById('midiUploadZone');
-  const midiFileInput = document.getElementById('midiFileInput');
-  const nextToLearningBtn = document.getElementById('nextToLearningBtn');
-  const disconnectFromSongs = document.getElementById('disconnectFromSongs');
+  // helpers UI
+  function switchScreen(screenId) {
+    document.getElementById('screenConnect').classList.add('hidden');
+    document.getElementById('screenSongs').classList.add('hidden');
+    document.getElementById('screenPlayer').classList.add('hidden');
+    document.getElementById(screenId).classList.remove('hidden');
+  }
 
-  // Elements pantalla aprenentatge
-  const currentNoteLarge = document.getElementById('currentNoteLarge');
-  const progressCountLabel = document.getElementById('progressCountLabel');
-  const instructionMsg = document.getElementById('instructionMsg');
-  const learningProgressFill = document.getElementById('learningProgressFill');
-  const playPauseLearnBtn = document.getElementById('playPauseLearnBtn');
-  const resetLearnBtn = document.getElementById('resetLearnBtn');
-  const visualKeyboardContainer = document.getElementById('visualKeyboardContainer');
-  const tempoSlider = document.getElementById('tempoSlider');
-  const tempoValue = document.getElementById('tempoValue');
-  const backToSongsFromLearn = document.getElementById('backToSongsFromLearn');
-  const disconnectFromLearn = document.getElementById('disconnectFromLearn');
-
-  // ----- Utils visuals -----
-  function renderVirtualKeyboard(highlightNote = null) {
-    visualKeyboardContainer.innerHTML = '';
-    NOTES_BLANQUES.forEach(nota => {
-      const keyDiv = document.createElement('div');
-      keyDiv.className = 'key';
-      keyDiv.textContent = nota.replace(/\d/, '');
-      if (highlightNote === nota) keyDiv.classList.add('lit');
-      visualKeyboardContainer.appendChild(keyDiv);
+  // crear LEDs visuals
+  function buildLedVisuals() {
+    const container = document.getElementById('ledVisualStrip');
+    container.innerHTML = '';
+    NOTES_BLANQUES.forEach((nota, idx) => {
+      const divWrap = document.createElement('div');
+      divWrap.className = 'led-key';
+      divWrap.innerHTML = `<div class="led-circle" id="ledCircle${idx}">${nota.replace(/\d/g,'')}</div><div class="led-label-small">${nota}</div>`;
+      container.appendChild(divWrap);
     });
   }
-
-  function highlightKeyByNote(nota) {
-    const keys = document.querySelectorAll('#visualKeyboardContainer .key');
-    const idx = NOTES_BLANQUES.indexOf(nota);
-    keys.forEach((k, i) => k.classList.remove('lit'));
-    if (idx !== -1 && keys[idx]) keys[idx].classList.add('lit');
-  }
-
-  function updateLearningProgress() {
-    if (!currentNotesSeq.length) {
-      progressCountLabel.innerText = `0 / 0`;
-      learningProgressFill.style.width = '0%';
-      return;
+  function highlightLed(notaName) {
+    const idx = NOTES_BLANQUES.indexOf(notaName);
+    if (currentLedIndex !== -1) {
+      const prev = document.getElementById(`ledCircle${currentLedIndex}`);
+      if (prev) prev.classList.remove('active');
     }
-    progressCountLabel.innerText = `${currentIndex} / ${currentNotesSeq.length}`;
-    const percent = (currentIndex / currentNotesSeq.length) * 100;
-    learningProgressFill.style.width = `${percent}%`;
+    if (idx !== -1) {
+      const newLed = document.getElementById(`ledCircle${idx}`);
+      if (newLed) newLed.classList.add('active');
+      currentLedIndex = idx;
+    } else if (currentLedIndex !== -1) {
+      currentLedIndex = -1;
+    }
   }
 
-  // ----- BLE -----
+  // enviar nota per BLE
   async function sendNoteToESP(nota) {
-    if (!btChar || !connected) return false;
+    if (!btCharacteristic || !isConnected) {
+      console.warn("no BT");
+      return false;
+    }
     try {
       const encoder = new TextEncoder();
-      await btChar.writeValue(encoder.encode(nota + '\n'));
+      await btCharacteristic.writeValue(encoder.encode(nota + "\n"));
       return true;
     } catch(e) { return false; }
   }
 
-  function handleEspNotification(value) {
-    const msg = value.trim();
-    if (msg === "OK" && waitingForOk && isPlaying) {
-      waitingForOk = false;
-      instructionMsg.innerHTML = '✅ Nota correcta!';
-      currentIndex++;
-      updateLearningProgress();
-      if (currentIndex >= currentNotesSeq.length) {
-        instructionMsg.innerHTML = '🏆 Cançó completada! 🎉';
-        isPlaying = false;
-        waitingForOk = false;
-        playPauseLearnBtn.innerHTML = '▶';
-        currentNoteLarge.textContent = '✔️';
-        highlightKeyByNote(null);
-      } else {
-        setTimeout(() => { if (isPlaying && !waitingForOk) askNextNote(); }, 200);
+  // gestió de resposta OK des d'ESP32
+  function setupNotifications() {
+    if (!btCharacteristic) return;
+    btCharacteristic.addEventListener('characteristicvaluechanged', (event) => {
+      const val = new TextDecoder().decode(event.target.value);
+      if (val === "OK" && waitingForESP && isPlaying) {
+        waitingForESP = false;
+        document.getElementById('playerStateMessage').innerHTML = '✅ encertada! avançant...';
+        setTimeout(() => { if (!waitingForESP && isPlaying) nextNote(); }, 150);
+      } else if (val.startsWith("ERROR") && waitingForESP) {
+        document.getElementById('playerStateMessage').innerHTML = '❌ nota incorrecta o timeout, torna a tocar la mateixa nota';
+        setTimeout(() => { if (waitingForESP) document.getElementById('playerStateMessage').innerHTML = '🎵 prem la nota correcta'; }, 1200);
       }
-    } else if (msg.startsWith("ERROR")) {
-      waitingForOk = false;
-      instructionMsg.innerHTML = '❌ Nota incorrecta, torna a tocar';
-      const wrongIdx = currentIndex;
-      if (wrongIdx < currentNotesSeq.length) {
-        const currentNotaFail = currentNotesSeq[wrongIdx].nota;
-        highlightKeyByNote(currentNotaFail);
-        setTimeout(() => {
-          if (isPlaying && currentIndex < currentNotesSeq.length && !waitingForOk) {
-            instructionMsg.innerHTML = `🎯 Toca: ${currentNotaFail}`;
-            sendNoteToESP(currentNotaFail);
-            waitingForOk = true;
-          }
-        }, 700);
-      }
-    }
-  }
-
-  async function askNextNote() {
-    if (!isPlaying) return;
-    if (currentIndex >= currentNotesSeq.length) return;
-    const { nota } = currentNotesSeq[currentIndex];
-    currentNoteLarge.textContent = nota;
-    highlightKeyByNote(nota);
-    updateLearningProgress();
-    const sent = await sendNoteToESP(nota);
-    if (!sent) { instructionMsg.innerHTML = '⚠️ Error BLE'; isPlaying = false; return; }
-    waitingForOk = true;
-    instructionMsg.innerHTML = `🎹 Toca la tecla: ${nota}`;
-  }
-
-  async function startLearning() {
-    if (!connected) { alert("Connecta la placa primer"); return; }
-    if (!currentNotesSeq.length) { alert("Selecciona una cançó"); return; }
-    if (isPlaying) return;
-    currentIndex = 0;
-    waitingForOk = false;
-    isPlaying = true;
-    playPauseLearnBtn.innerHTML = '⏸';
-    updateLearningProgress();
-    await askNextNote();
-  }
-
-  function pauseLearning() {
-    isPlaying = false;
-    waitingForOk = false;
-    playPauseLearnBtn.innerHTML = '▶';
-    instructionMsg.innerHTML = '⏸ Pausat · prem Play';
-  }
-
-  function resetLearning() {
-    const wasPlaying = isPlaying;
-    if (wasPlaying) pauseLearning();
-    currentIndex = 0;
-    waitingForOk = false;
-    updateLearningProgress();
-    if (currentNotesSeq.length) {
-      currentNoteLarge.textContent = currentNotesSeq[0].nota;
-      highlightKeyByNote(currentNotesSeq[0].nota);
-    } else {
-      currentNoteLarge.textContent = '—';
-      highlightKeyByNote(null);
-    }
-    if (wasPlaying) startLearning();
-  }
-
-  // ----- Gestió cançons -----
-  function renderSongList() {
-    songsListContainer.innerHTML = '';
-    CANCONS_PRESET.forEach((song, idx) => {
-      const div = document.createElement('div');
-      div.className = 'song-item';
-      div.innerHTML = `<div class="song-info"><h4>${song.nom}</h4><span>${song.autor} · ${song.notes.length} notes</span></div><div>🎵</div>`;
-      div.addEventListener('click', () => {
-        currentSong = song;
-        currentNotesSeq = [...song.notes];
-        currentIndex = 0;
-        if (currentNotesSeq.length) currentNoteLarge.textContent = currentNotesSeq[0].nota;
-        updateLearningProgress();
-        nextToLearningBtn.disabled = false;
-        // highlight visual
-        document.querySelectorAll('.song-item').forEach(el => el.style.borderColor = 'var(--border-light)');
-        div.style.borderColor = 'var(--accent)';
-      });
-      songsListContainer.appendChild(div);
     });
   }
 
-  function addMidiSong(nom, notesArray) {
-    const newSong = { nom, autor: 'MIDI importat', notes: notesArray };
-    CANCONS_PRESET.push(newSong);
-    renderSongList();
-    currentSong = newSong;
-    currentNotesSeq = [...notesArray];
-    currentIndex = 0;
-    updateLearningProgress();
-    nextToLearningBtn.disabled = false;
+  async function displayCurrentNoteAndWait() {
+    if (!isPlaying || currentNoteIndex >= sequenceNotes.length) {
+      if (currentNoteIndex >= sequenceNotes.length && isPlaying) finishSong();
+      return;
+    }
+    const { nota, dur } = sequenceNotes[currentNoteIndex];
+    highlightLed(nota);
+    document.getElementById('playerCurrentNote').innerText = nota;
+    document.getElementById('playerNoteCounter').innerText = `${currentNoteIndex+1} / ${sequenceNotes.length}`;
+    const prog = ((currentNoteIndex+1)/sequenceNotes.length)*100;
+    document.getElementById('playerProgressFill').style.width = `${prog}%`;
+    document.getElementById('playerStateMessage').innerHTML = '🎤 toca la nota al teclat físic...';
+    waitingForESP = true;
+
+    const success = await sendNoteToESP(nota);
+    if (!success) {
+      document.getElementById('playerStateMessage').innerHTML = '⚠️ error Bluetooth, pausa';
+      isPlaying = false;
+      waitingForESP = false;
+      return;
+    }
+    // esperem callback OK. Timeout de seguretat per evitar bloqueig (6s)
+    setTimeout(() => {
+      if (waitingForESP && isPlaying) {
+        waitingForESP = false;
+        document.getElementById('playerStateMessage').innerHTML = '⏱️ timeout, reintentant nota...';
+        setTimeout(() => { if (isPlaying && !waitingForESP) displayCurrentNoteAndWait(); }, 400);
+      }
+    }, 7000);
   }
 
-  // ---- Bluetooth connection ----
+  async function nextNote() {
+    if (!isPlaying) return;
+    currentNoteIndex++;
+    if (currentNoteIndex < sequenceNotes.length) {
+      await displayCurrentNoteAndWait();
+    } else {
+      finishSong();
+    }
+  }
+
+  function finishSong() {
+    isPlaying = false;
+    waitingForESP = false;
+    document.getElementById('playerStateMessage').innerHTML = '🏆 Cançó completada! 🎉';
+    document.getElementById('playerPlayPauseBtn').innerHTML = '▶';
+    if (currentLedIndex !== -1) {
+      const oldLed = document.getElementById(`ledCircle${currentLedIndex}`);
+      if (oldLed) oldLed.classList.remove('active');
+      currentLedIndex = -1;
+    }
+  }
+
+  function stopAndResetPlayerUI() {
+    isPlaying = false;
+    waitingForESP = false;
+    currentNoteIndex = 0;
+    if (currentLedIndex !== -1) {
+      const oldLed = document.getElementById(`ledCircle${currentLedIndex}`);
+      if (oldLed) oldLed.classList.remove('active');
+      currentLedIndex = -1;
+    }
+    document.getElementById('playerCurrentNote').innerText = '—';
+    document.getElementById('playerNoteCounter').innerText = sequenceNotes.length ? `0 / ${sequenceNotes.length}` : "0 / 0";
+    document.getElementById('playerProgressFill').style.width = '0%';
+    document.getElementById('playerStateMessage').innerHTML = '⏸ aturat. Prem ▶ per començar';
+    document.getElementById('playerPlayPauseBtn').innerHTML = '▶';
+  }
+
+  async function startPractice() {
+    if (!currentSong || !sequenceNotes.length) return;
+    if (!isConnected || !btCharacteristic) {
+      alert('🔌 necessites connexió Bluetooth activa. Torna a la pantalla principal.');
+      switchScreen('screenConnect');
+      return;
+    }
+    stopAndResetPlayerUI();
+    currentNoteIndex = 0;
+    isPlaying = true;
+    waitingForESP = false;
+    document.getElementById('playerPlayPauseBtn').innerHTML = '⏸';
+    document.getElementById('playerSongTitle').innerText = currentSong.nom;
+    await displayCurrentNoteAndWait();
+  }
+
+  function togglePlayPause() {
+    if (!currentSong) return;
+    if (!isPlaying) {
+      startPractice();
+    } else {
+      isPlaying = false;
+      waitingForESP = false;
+      document.getElementById('playerPlayPauseBtn').innerHTML = '▶';
+      document.getElementById('playerStateMessage').innerHTML = '⏸ pausa';
+    }
+  }
+
+  function resetSong() {
+    if (!currentSong) return;
+    const wasPlaying = isPlaying;
+    isPlaying = false;
+    waitingForESP = false;
+    currentNoteIndex = 0;
+    stopAndResetPlayerUI();
+    if (wasPlaying) {
+      startPractice();
+    }
+  }
+
+  function rebuildSongLibrary() {
+    const container = document.getElementById('songLibraryContainer');
+    container.innerHTML = '';
+    const allSongs = [...presetSongs];
+    allSongs.forEach((song, idx) => {
+      const div = document.createElement('div');
+      div.className = 'song-card';
+      if (selectedSongId === idx) div.classList.add('selected');
+      div.innerHTML = `<div class="song-info"><h4>${song.nom}</h4><p>${song.autor} · ${song.notes.length} notes</p></div><span style="font-size:22px;">${selectedSongId === idx ? '✓' : ''}</span>`;
+      div.onclick = () => {
+        selectedSongId = idx;
+        currentSong = { ...song };
+        sequenceNotes = [...song.notes];
+        document.querySelectorAll('.song-card').forEach(c => c.classList.remove('selected'));
+        div.classList.add('selected');
+        document.getElementById('openPlayerBtn').disabled = false;
+        document.getElementById('songSelectHint').innerText = `✅ "${song.nom}" preparada. Prem "Iniciar Pràctica"`;
+      };
+      container.appendChild(div);
+    });
+  }
+
+  // MIDI
+  function loadMidiFromFile(file) {
+    MidiParser.parse(file, (midi) => {
+      try {
+        const track = midi.track[0] || midi.track[1];
+        let tempoMicros = 500000;
+        const tpb = midi.timeDivision || 480;
+        const extracted = [];
+        track.event.forEach(ev => {
+          if (ev.type === 255 && ev.metaType === 81) tempoMicros = ev.data;
+          if (ev.type === 9 && ev.data[1] > 0) {
+            const notaNom = MIDI_A_NOTA[ev.data[0]];
+            if (notaNom) {
+              let durMs = Math.round((ev.deltaTime / tpb) * (tempoMicros / 1000));
+              extracted.push({ nota: notaNom, dur: Math.max(durMs, 180) });
+            }
+          }
+        });
+        if (extracted.length === 0) throw new Error("sense notes blanques");
+        const newSong = { nom: file.name.replace(/\.midi?$/i,''), autor: "MIDI import", notes: extracted };
+        presetSongs.push(newSong);
+        rebuildSongLibrary();
+        selectedSongId = presetSongs.length-1;
+        currentSong = newSong;
+        sequenceNotes = [...extracted];
+        document.getElementById('openPlayerBtn').disabled = false;
+        document.getElementById('songSelectHint').innerHTML = `🎵 MIDI carregat: ${extracted.length} notes`;
+      } catch(e) { alert("Error MIDI: " + e.message); }
+    });
+  }
+
+  // BLUETOOTH CONNEXIÓ
   async function connectBluetooth() {
     try {
-      globalStatusText.innerText = 'Connectant...';
-      globalLed.classList.remove('connected');
-      const device = await navigator.bluetooth.requestDevice({
-        filters: [{ name: 'TeclatMusical' }],
-        optionalServices: ['0000ffe0-0000-1000-8000-00805f9b34fb']
-      });
+      const led = document.getElementById('connLed');
+      const statusText = document.getElementById('connStatusText');
+      led.className = 'bt-led connecting';
+      statusText.innerText = 'Connectant...';
+      const device = await navigator.bluetooth.requestDevice({ filters: [{ name: 'TeclatMusical' }], optionalServices: ['0000ffe0-0000-1000-8000-00805f9b34fb'] });
       btDevice = device;
-      device.addEventListener('gattserverdisconnected', () => onDisconnect());
       const server = await device.gatt.connect();
       const service = await server.getPrimaryService('0000ffe0-0000-1000-8000-00805f9b34fb');
-      btChar = await service.getCharacteristic('0000ffe1-0000-1000-8000-00805f9b34fb');
-      await btChar.startNotifications();
-      btChar.addEventListener('characteristicvaluechanged', (event) => {
-        const val = new TextDecoder().decode(event.target.value);
-        handleEspNotification(val);
-      });
-      connected = true;
-      globalStatusText.innerText = 'Connectat';
-      globalLed.classList.add('connected');
-      // swap screens: connect->songs
-      screenConnect.classList.add('hidden');
-      screenSongs.classList.remove('hidden');
-      screenLearning.classList.add('hidden');
-      renderSongList();
-      if (CANCONS_PRESET.length) {
-        currentSong = CANCONS_PRESET[0];
-        currentNotesSeq = [...currentSong.notes];
-        currentIndex = 0;
-        updateLearningProgress();
-        nextToLearningBtn.disabled = false;
-      }
-    } catch(e) { globalStatusText.innerText = 'Error'; globalLed.classList.remove('connected'); alert("No s'ha pogut connectar"); }
-  }
-
-  function onDisconnect() {
-    connected = false;
-    btDevice = null; btChar = null;
-    globalStatusText.innerText = 'Desconnectat';
-    globalLed.classList.remove('connected');
-    if (!screenConnect.classList.contains('hidden')) return;
-    // tornar a pantalla de connexió
-    screenConnect.classList.remove('hidden');
-    screenSongs.classList.add('hidden');
-    screenLearning.classList.add('hidden');
-    if (isPlaying) pauseLearning();
+      btCharacteristic = await service.getCharacteristic('0000ffe1-0000-1000-8000-00805f9b34fb');
+      await btCharacteristic.startNotifications();
+      setupNotifications();
+      isConnected = true;
+      led.className = 'bt-led connected';
+      statusText.innerText = `Connectat (${device.name || 'TeclaLux'})`;
+      // després d'èxit, anar a pantalla cançons
+      switchScreen('screenSongs');
+    } catch(e) {
+      const led = document.getElementById('connLed');
+      const statusText = document.getElementById('connStatusText');
+      led.className = 'bt-led';
+      statusText.innerText = 'Error connexió';
+      alert('No s’ha pogut connectar: ' + e.message);
+    }
   }
 
   function disconnectFull() {
     if (btDevice && btDevice.gatt.connected) btDevice.gatt.disconnect();
-    onDisconnect();
+    isConnected = false;
+    btCharacteristic = null;
+    btDevice = null;
+    const led = document.getElementById('connLed');
+    const statusText = document.getElementById('connStatusText');
+    if (led) { led.className = 'bt-led'; statusText.innerText = 'Desconnectat'; }
+    if (isPlaying) isPlaying = false;
+    waitingForESP = false;
+    switchScreen('screenConnect');
   }
 
-  // ---- Event Listeners ----
-  document.getElementById('connectScreenBtn').addEventListener('click', connectBluetooth);
-  disconnectFromSongs.addEventListener('click', disconnectFull);
-  disconnectFromLearn.addEventListener('click', disconnectFull);
-  backToSongsFromLearn.addEventListener('click', () => {
-    if (isPlaying) pauseLearning();
-    screenLearning.classList.add('hidden');
-    screenSongs.classList.remove('hidden');
-    renderSongList();
-  });
-  nextToLearningBtn.addEventListener('click', () => {
-    if (!currentSong) return;
-    screenSongs.classList.add('hidden');
-    screenLearning.classList.remove('hidden');
-    renderVirtualKeyboard();
-    if (currentNotesSeq.length) {
-      currentNoteLarge.textContent = currentNotesSeq[0]?.nota || '—';
-      highlightKeyByNote(currentNotesSeq[0]?.nota);
-    }
-    updateLearningProgress();
-    if (isPlaying) pauseLearning();
-    isPlaying = false;
-    waitingForOk = false;
-    playPauseLearnBtn.innerHTML = '▶';
-    instructionMsg.innerHTML = '🎯 Prem ▶ per començar';
-  });
-  playPauseLearnBtn.addEventListener('click', () => {
-    if (!connected) { alert("Connecta la placa primer"); return; }
-    if (!currentNotesSeq.length) return;
-    if (isPlaying) pauseLearning();
-    else startLearning();
-  });
-  resetLearnBtn.addEventListener('click', () => { if (currentNotesSeq.length) resetLearning(); });
-  tempoSlider.addEventListener('input', (e) => { tempoMultiplier = parseFloat(e.target.value); tempoValue.innerText = tempoMultiplier.toFixed(1)+'x'; });
-  midiUploadZone.addEventListener('click', () => midiFileInput.click());
-  midiFileInput.addEventListener('change', (e) => {
-    const file = e.target.files[0];
-    if (!file) return;
-    MidiParser.parse(file, (midi) => {
-      const track = midi.track[0] || midi.track[1];
-      let tempoMicros = 500000;
-      const tpb = midi.timeDivision;
-      const notesRaw = [];
-      track.event.forEach(ev => {
-        if (ev.type === 255 && ev.metaType === 81) tempoMicros = ev.data;
-        if (ev.type === 9 && ev.data[1] > 0) {
-          const notaNom = MIDI_A_NOTA[ev.data[0]];
-          if (notaNom) {
-            const durMs = Math.round((ev.deltaTime / tpb) * (tempoMicros / 1000));
-            notesRaw.push({ nota: notaNom, dur: Math.max(durMs, 200) });
-          }
-        }
-      });
-      if (notesRaw.length) addMidiSong(file.name.replace(/\.midi?$/i,''), notesRaw);
-      else alert("No s'han trobat notes blanques");
-    });
-  });
-  renderVirtualKeyboard();
+  // EVENTS
+  window.onload = () => {
+    buildLedVisuals();
+    rebuildSongLibrary();
+    document.getElementById('mainConnectBtn').onclick = connectBluetooth;
+    document.getElementById('disconnectFromSongsBtn').onclick = disconnectFull;
+    document.getElementById('backToConnectFromSongs').onclick = disconnectFull;
+    document.getElementById('disconnectFromPlayerBtn').onclick = disconnectFull;
+    document.getElementById('backToLibraryFromPlayer').onclick = () => { if (isPlaying) isPlaying=false; waitingForESP=false; switchScreen('screenSongs'); };
+    document.getElementById('exitToSongsBtn').onclick = () => { if (isPlaying) isPlaying=false; waitingForESP=false; switchScreen('screenSongs'); };
+    document.getElementById('openPlayerBtn').onclick = () => { if (currentSong && sequenceNotes.length) switchScreen('screenPlayer'); };
+    document.getElementById('playerPlayPauseBtn').onclick = togglePlayPause;
+    document.getElementById('playerResetBtn').onclick = resetSong;
+    const speedSlider = document.getElementById('playerSpeedSlider');
+    const speedVal = document.getElementById('playerSpeedVal');
+    speedSlider.addEventListener('input', (e) => { playSpeed = parseFloat(e.target.value); speedVal.innerText = `×${playSpeed.toFixed(2)}`; });
+    document.getElementById('midiFileInput').addEventListener('change', (e) => { if(e.target.files[0]) loadMidiFromFile(e.target.files[0]); e.target.value=''; });
+    document.getElementById('midiUploadLabel').addEventListener('click', () => document.getElementById('midiFileInput').click());
+  };
 </script>
 </body>
 </html>
