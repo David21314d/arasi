@@ -22,7 +22,6 @@
       --green-glow: rgba(16, 212, 142, 0.4);
       --green-dim: rgba(16, 212, 142, 0.12);
       --amber-accent: #ffb347;
-      --red-warning: #ff5e5e;
       --text-main: #f0f3fa;
       --text-muted: #8a8aa8;
       --font-sans: 'Inter', system-ui, -apple-system, sans-serif;
@@ -50,6 +49,7 @@
       z-index: 0;
     }
 
+    /* app container */
     .app {
       max-width: 560px;
       width: 100%;
@@ -58,6 +58,7 @@
       z-index: 2;
     }
 
+    /* pantalles */
     .screen {
       transition: opacity 0.3s ease, transform 0.2s ease;
     }
@@ -66,6 +67,7 @@
       display: none;
     }
 
+    /* targetes premium */
     .lux-card {
       background: var(--surface-card);
       border: 1px solid var(--border-subtle);
@@ -124,6 +126,7 @@
       color: #ffae9e;
     }
 
+    /* barra estat BT */
     .bt-status-bar {
       display: flex;
       align-items: center;
@@ -154,6 +157,7 @@
       100% { opacity: 1; transform: scale(1.2);}
     }
 
+    /* llista cançons */
     .song-grid {
       display: flex;
       flex-direction: column;
@@ -184,10 +188,6 @@
       background: var(--green-dim);
       box-shadow: 0 0 0 1px var(--green-primary) inset;
     }
-    .song-card.warning {
-      border-color: var(--red-warning);
-      opacity: 0.7;
-    }
     .song-info h4 {
       font-weight: 600;
       font-size: 16px;
@@ -212,6 +212,7 @@
       background: var(--green-dim);
     }
 
+    /* teclat visual (tira LED simulada) */
     .led-panel {
       background: var(--surface-elevated);
       border-radius: 28px;
@@ -322,10 +323,6 @@
       border-radius: 40px;
       color: var(--green-primary);
     }
-    .badge-warning {
-      background: rgba(255,94,94,0.2);
-      color: var(--red-warning);
-    }
   </style>
 </head>
 <body>
@@ -362,7 +359,6 @@
       <input type="file" id="midiFileInput" accept=".mid,.midi" style="display: none;">
       <span style="font-size: 28px;">📂</span><br>
       <span style="font-size: 13px;">Puja un fitxer <strong style="color: var(--green-primary);">MIDI</strong> propi</span>
-      <span style="font-size: 11px; display: block; margin-top: 6px; color: var(--text-muted);">(es filtraran automàticament les notes no permeses)</span>
     </label>
 
     <div class="bottom-actions">
@@ -382,10 +378,12 @@
       <button id="exitToSongsBtn" class="btn-lux" style="width: auto; padding: 8px 16px; background: #1e1e2c;" title="Tornar a cançons">📁 Cançons</button>
     </div>
 
+    <!-- LEDs simulats -->
     <div class="led-panel">
       <div class="led-strip-premium" id="ledVisualStrip"></div>
     </div>
 
+    <!-- Nota actual + estat -->
     <div class="nota-hero">
       <div class="big-note" id="playerCurrentNote">—</div>
       <div id="playerStateMessage" style="font-size: 14px; font-weight: 400; margin-top: 6px; color: var(--amber-accent);">⏳ esperant resposta</div>
@@ -396,6 +394,7 @@
       </div>
     </div>
 
+    <!-- controls reproducció + velocitat -->
     <div style="display: flex; gap: 12px; justify-content: center;">
       <button id="playerPlayPauseBtn" class="btn-lux" style="width: 70px;">▶</button>
       <button id="playerResetBtn" class="btn-lux btn-outline">↺ Reiniciar</button>
@@ -416,44 +415,17 @@
 
 <script src="https://cdn.jsdelivr.net/npm/midi-parser-js@4.0.6/src/midi-parser.js"></script>
 <script>
-  // ---------- NOTES PERMESES ----------
-  // Notes prohibides: Mi4, Sol4, Si4, Do5, Sol5, Si5, Mi6, Sol6, Si6, Do7
-  // I totes les tecles negres (que tenen #)
-  const NOTES_PERMESES = new Set([
-    'DO4', 'RE4', 'FA4', 'LA4',  // octava 4 sense Mi, Sol, Si
-    'DO5', 'RE5', 'FA5', 'LA5',  // octava 5 sense Do? Do5 prohibida, espera - Do5 està prohibida! Re5, Fa5, La5 permeses
-    // Revisem: Do5 està a la llista de prohibides (Do5)
-    // Per tant octava 5 permeses: RE5, FA5, LA5
-    'RE5', 'FA5', 'LA5',
-    'DO6', 'RE6', 'FA6', 'LA6',  // octava 6 - Mi6, Sol6, Si6 prohibides
-    'DO7'  // Do7 està prohibida! La llista diu Do7 prohibida -> no la incloem
-    // Per tant DO7 no la posem
-  ]);
-  // Recalculem: Do7 prohibida, per tant octava 7 cap nota
-  NOTES_PERMESES.delete('DO7');
-  // Afegim DO6, RE6, FA6, LA6
-  // També DO4, RE4, FA4, LA4, RE5, FA5, LA5
-  
-  // Verificar si una nota està permesa
-  function isNoteAllowed(notaName) {
-    return NOTES_PERMESES.has(notaName);
-  }
-
-  // Llista de totes les notes blanques per als LEDs visuals
-  const NOTES_BLANQUES_VISUAL = ['DO4','RE4','FA4','LA4','DO5','RE5','FA5','LA5','DO6','RE6','FA6','LA6'];
-  
+  // ---------- CONSTANTS GLOBALS ----------
+  const NOTES_BLANQUES = ['DO4','RE4','MI4','FA4','SOL4','LA4','SI4','DO5','RE5','MI5','FA5','SOL5','LA5','SI5','DO6','RE6','MI6','FA6','SOL6','LA6','SI6','DO7'];
   const MIDI_BASE = {0:'DO',1:'DO#',2:'RE',3:'RE#',4:'MI',5:'FA',6:'FA#',7:'SOL',8:'SOL#',9:'LA',10:'LA#',11:'SI'};
-  const BLANQUES_SET = new Set(['DO','RE','FA','LA']); // només blanques permeses
-  
+  const BLANQUES_SET = new Set(['DO','RE','MI','FA','SOL','LA','SI']);
   const MIDI_A_NOTA = {};
   for (let m = 48; m <= 96; m++) {
     let nom = MIDI_BASE[m % 12];
     let oct = Math.floor(m / 12) - 1;
     if (BLANQUES_SET.has(nom)) {
       let full = nom + oct;
-      if (NOTES_PERMESES.has(full)) {
-        MIDI_A_NOTA[m] = full;
-      }
+      if (NOTES_BLANQUES.includes(full)) MIDI_A_NOTA[m] = full;
     }
   }
 
@@ -462,7 +434,7 @@
   let btCharacteristic = null;
   let isConnected = false;
 
-  let currentSong = null;
+  let currentSong = null;          // { nom, autor, notes: [{nota,dur}] }
   let sequenceNotes = [];
   let currentNoteIndex = 0;
   let isPlaying = false;
@@ -470,58 +442,15 @@
   let playSpeed = 1.0;
   let currentLedIndex = -1;
 
-  // ---------- CANÇONS QUE COMPLEIXEN ELS REQUISITS ----------
-  // Només notes permeses: DO4, RE4, FA4, LA4, RE5, FA5, LA5, DO6, RE6, FA6, LA6
-  const presetSongs = [
-    { 
-      nom: "Melodia de Llum", 
-      autor: "TeclaLux Studio", 
-      notes: [
-        {nota:'DO4',dur:500},{nota:'RE4',dur:500},{nota:'FA4',dur:500},{nota:'LA4',dur:500},
-        {nota:'DO5',dur:1000},{nota:'LA4',dur:500},{nota:'FA4',dur:500},{nota:'RE4',dur:500},
-        {nota:'DO4',dur:1500}
-      ] 
-    },
-    { 
-      nom: "Camí de Faust", 
-      autor: "TeclaLux Studio", 
-      notes: [
-        {nota:'RE4',dur:400},{nota:'FA4',dur:400},{nota:'LA4',dur:400},{nota:'RE5',dur:400},
-        {nota:'FA5',dur:400},{nota:'LA5',dur:800},{nota:'FA5',dur:400},{nota:'RE5',dur:400},
-        {nota:'LA4',dur:400},{nota:'FA4',dur:400},{nota:'RE4',dur:800}
-      ] 
-    },
-    { 
-      nom: "Vals dels Records", 
-      autor: "TeclaLux Studio", 
-      notes: [
-        {nota:'DO4',dur:600},{nota:'FA4',dur:300},{nota:'LA4',dur:300},{nota:'DO5',dur:600},
-        {nota:'FA4',dur:300},{nota:'LA4',dur:300},{nota:'DO5',dur:600},{nota:'LA4',dur:600},
-        {nota:'FA4',dur:600},{nota:'DO4',dur:1200}
-      ] 
-    },
-    { 
-      nom: "Aurora Daurada", 
-      autor: "TeclaLux Studio", 
-      notes: [
-        {nota:'LA4',dur:400},{nota:'RE5',dur:400},{nota:'FA5',dur:400},{nota:'LA5',dur:400},
-        {nota:'DO6',dur:800},{nota:'LA5',dur:400},{nota:'FA5',dur:400},{nota:'RE5',dur:400},
-        {nota:'LA4',dur:800}
-      ] 
-    },
-    { 
-      nom: "Cel de Cendres", 
-      autor: "TeclaLux Studio", 
-      notes: [
-        {nota:'FA4',dur:500},{nota:'LA4',dur:500},{nota:'DO5',dur:500},{nota:'RE5',dur:500},
-        {nota:'FA5',dur:1000},{nota:'RE5',dur:500},{nota:'DO5',dur:500},{nota:'LA4',dur:500},
-        {nota:'FA4',dur:1000}
-      ] 
-    }
+  // presets
+  let presetSongs = [
+    { nom: "Cumpleaños Feliz", autor: "Tradicional", notes: [{nota:'DO4',dur:400},{nota:'DO4',dur:200},{nota:'RE4',dur:600},{nota:'DO4',dur:600},{nota:'FA4',dur:600},{nota:'MI4',dur:1200},{nota:'DO4',dur:400},{nota:'DO4',dur:200},{nota:'RE4',dur:600},{nota:'DO4',dur:600},{nota:'SOL4',dur:600},{nota:'FA4',dur:1200},{nota:'DO4',dur:400},{nota:'DO4',dur:200},{nota:'DO5',dur:600},{nota:'LA4',dur:600},{nota:'FA4',dur:600},{nota:'MI4',dur:600},{nota:'RE4',dur:600},{nota:'SI4',dur:400},{nota:'SI4',dur:200},{nota:'LA4',dur:600},{nota:'FA4',dur:600},{nota:'SOL4',dur:600},{nota:'FA4',dur:1200}] },
+    { nom: "Oda a l'Alegria", autor: "Beethoven", notes: [{nota:'MI4',dur:400},{nota:'MI4',dur:400},{nota:'FA4',dur:400},{nota:'SOL4',dur:400},{nota:'SOL4',dur:400},{nota:'FA4',dur:400},{nota:'MI4',dur:400},{nota:'RE4',dur:400},{nota:'DO4',dur:400},{nota:'DO4',dur:400},{nota:'RE4',dur:400},{nota:'MI4',dur:400},{nota:'MI4',dur:600},{nota:'RE4',dur:200},{nota:'RE4',dur:800},{nota:'MI4',dur:400},{nota:'MI4',dur:400},{nota:'FA4',dur:400},{nota:'SOL4',dur:400},{nota:'SOL4',dur:400},{nota:'FA4',dur:400},{nota:'MI4',dur:400},{nota:'RE4',dur:400},{nota:'DO4',dur:400},{nota:'DO4',dur:400},{nota:'RE4',dur:400},{nota:'MI4',dur:400},{nota:'RE4',dur:600},{nota:'DO4',dur:200},{nota:'DO4',dur:800}] }
   ];
 
   let selectedSongId = null;
 
+  // helpers UI
   function switchScreen(screenId) {
     document.getElementById('screenConnect').classList.add('hidden');
     document.getElementById('screenSongs').classList.add('hidden');
@@ -529,19 +458,19 @@
     document.getElementById(screenId).classList.remove('hidden');
   }
 
+  // crear LEDs visuals
   function buildLedVisuals() {
     const container = document.getElementById('ledVisualStrip');
     container.innerHTML = '';
-    NOTES_BLANQUES_VISUAL.forEach((nota, idx) => {
+    NOTES_BLANQUES.forEach((nota, idx) => {
       const divWrap = document.createElement('div');
       divWrap.className = 'led-key';
       divWrap.innerHTML = `<div class="led-circle" id="ledCircle${idx}">${nota.replace(/\d/g,'')}</div><div class="led-label-small">${nota}</div>`;
       container.appendChild(divWrap);
     });
   }
-  
   function highlightLed(notaName) {
-    const idx = NOTES_BLANQUES_VISUAL.indexOf(notaName);
+    const idx = NOTES_BLANQUES.indexOf(notaName);
     if (currentLedIndex !== -1) {
       const prev = document.getElementById(`ledCircle${currentLedIndex}`);
       if (prev) prev.classList.remove('active');
@@ -555,8 +484,12 @@
     }
   }
 
+  // enviar nota per BLE
   async function sendNoteToESP(nota) {
-    if (!btCharacteristic || !isConnected) return false;
+    if (!btCharacteristic || !isConnected) {
+      console.warn("no BT");
+      return false;
+    }
     try {
       const encoder = new TextEncoder();
       await btCharacteristic.writeValue(encoder.encode(nota + "\n"));
@@ -564,6 +497,7 @@
     } catch(e) { return false; }
   }
 
+  // gestió de resposta OK des d'ESP32
   function setupNotifications() {
     if (!btCharacteristic) return;
     btCharacteristic.addEventListener('characteristicvaluechanged', (event) => {
@@ -600,6 +534,7 @@
       waitingForESP = false;
       return;
     }
+    // esperem callback OK. Timeout de seguretat per evitar bloqueig (6s)
     setTimeout(() => {
       if (waitingForESP && isPlaying) {
         waitingForESP = false;
@@ -687,11 +622,6 @@
     }
   }
 
-  // Filtrar notes no permeses d'una cançó
-  function filterAllowedNotes(notes) {
-    return notes.filter(note => isNoteAllowed(note.nota));
-  }
-
   function rebuildSongLibrary() {
     const container = document.getElementById('songLibraryContainer');
     container.innerHTML = '';
@@ -700,34 +630,21 @@
       const div = document.createElement('div');
       div.className = 'song-card';
       if (selectedSongId === idx) div.classList.add('selected');
-      
-      // Comprovar si totes les notes són permeses
-      const invalidNotes = song.notes.filter(n => !isNoteAllowed(n.nota));
-      if (invalidNotes.length > 0) {
-        div.classList.add('warning');
-      }
-      
-      div.innerHTML = `<div class="song-info"><h4>${song.nom} ${invalidNotes.length > 0 ? '⚠️' : '✓'}</h4><p>${song.autor} · ${song.notes.length} notes</p></div><span style="font-size:22px;">${selectedSongId === idx ? '✓' : ''}</span>`;
+      div.innerHTML = `<div class="song-info"><h4>${song.nom}</h4><p>${song.autor} · ${song.notes.length} notes</p></div><span style="font-size:22px;">${selectedSongId === idx ? '✓' : ''}</span>`;
       div.onclick = () => {
         selectedSongId = idx;
-        // Filtrar per assegurar que només es guarden notes permeses
-        const filteredNotes = filterAllowedNotes(song.notes);
-        currentSong = { ...song, notes: filteredNotes };
-        sequenceNotes = [...filteredNotes];
+        currentSong = { ...song };
+        sequenceNotes = [...song.notes];
         document.querySelectorAll('.song-card').forEach(c => c.classList.remove('selected'));
         div.classList.add('selected');
-        
-        if (filteredNotes.length < song.notes.length) {
-          document.getElementById('songSelectHint').innerHTML = `⚠️ "${song.nom}" té ${song.notes.length - filteredNotes.length} notes no permeses que s'han ignorat. Notes vàlides: ${filteredNotes.length}`;
-        } else {
-          document.getElementById('songSelectHint').innerHTML = `✅ "${song.nom}" preparada (${filteredNotes.length} notes vàlides). Prem "Iniciar Pràctica"`;
-        }
         document.getElementById('openPlayerBtn').disabled = false;
+        document.getElementById('songSelectHint').innerText = `✅ "${song.nom}" preparada. Prem "Iniciar Pràctica"`;
       };
       container.appendChild(div);
     });
   }
 
+  // MIDI
   function loadMidiFromFile(file) {
     MidiParser.parse(file, (midi) => {
       try {
@@ -739,13 +656,13 @@
           if (ev.type === 255 && ev.metaType === 81) tempoMicros = ev.data;
           if (ev.type === 9 && ev.data[1] > 0) {
             const notaNom = MIDI_A_NOTA[ev.data[0]];
-            if (notaNom && isNoteAllowed(notaNom)) {
+            if (notaNom) {
               let durMs = Math.round((ev.deltaTime / tpb) * (tempoMicros / 1000));
               extracted.push({ nota: notaNom, dur: Math.max(durMs, 180) });
             }
           }
         });
-        if (extracted.length === 0) throw new Error("no s'ha trobat cap nota permesa (només DO, RE, FA, LA en octaves 4,5,6)");
+        if (extracted.length === 0) throw new Error("sense notes blanques");
         const newSong = { nom: file.name.replace(/\.midi?$/i,''), autor: "MIDI import", notes: extracted };
         presetSongs.push(newSong);
         rebuildSongLibrary();
@@ -753,11 +670,12 @@
         currentSong = newSong;
         sequenceNotes = [...extracted];
         document.getElementById('openPlayerBtn').disabled = false;
-        document.getElementById('songSelectHint').innerHTML = `🎵 MIDI carregat: ${extracted.length} notes vàlides`;
+        document.getElementById('songSelectHint').innerHTML = `🎵 MIDI carregat: ${extracted.length} notes`;
       } catch(e) { alert("Error MIDI: " + e.message); }
     });
   }
 
+  // BLUETOOTH CONNEXIÓ
   async function connectBluetooth() {
     try {
       const led = document.getElementById('connLed');
@@ -774,6 +692,7 @@
       isConnected = true;
       led.className = 'bt-led connected';
       statusText.innerText = `Connectat (${device.name || 'TeclaLux'})`;
+      // després d'èxit, anar a pantalla cançons
       switchScreen('screenSongs');
     } catch(e) {
       const led = document.getElementById('connLed');
@@ -797,6 +716,7 @@
     switchScreen('screenConnect');
   }
 
+  // EVENTS
   window.onload = () => {
     buildLedVisuals();
     rebuildSongLibrary();
