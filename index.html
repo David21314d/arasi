@@ -429,33 +429,31 @@
     }
   }
 
-  // CANÇÓ PRÀCTICA - NOMÉS AMB ELS PULSADORS ESPECIFICATS:
-  // Pulsadors: 1(DO4),3(RE4),7(FA4),9(SOL4),11(LA4),15(DO5),17(RE5),19(MI5),23(SOL5),25(LA5),27(SI5),31(DO6)
+  // CANÇÓ PRÀCTICA - NOMÉS AMB DO4 (pulsador 1) i RE4 (pulsador 3)
   const PRACTICA_NOTES = [
-    {nota:'DO4', dur:500},   // pulsador 1
-    {nota:'RE4', dur:500},   // pulsador 3
-    {nota:'FA4', dur:500},   // pulsador 7
-    {nota:'SOL4', dur:500},  // pulsador 9
-    {nota:'LA4', dur:500},   // pulsador 11
-    {nota:'DO5', dur:500},   // pulsador 15
-    {nota:'RE5', dur:500},   // pulsador 17
-    {nota:'MI5', dur:500},   // pulsador 19
-    {nota:'SOL5', dur:500},  // pulsador 23
-    {nota:'LA5', dur:500},   // pulsador 25
-    {nota:'SI5', dur:500},   // pulsador 27
-    {nota:'DO6', dur:600},   // pulsador 31
-    // Tornada baixant
-    {nota:'SI5', dur:500},   // pulsador 27
-    {nota:'LA5', dur:500},   // pulsador 25
-    {nota:'SOL5', dur:500},  // pulsador 23
-    {nota:'MI5', dur:500},   // pulsador 19
-    {nota:'RE5', dur:500},   // pulsador 17
-    {nota:'DO5', dur:500},   // pulsador 15
-    {nota:'LA4', dur:500},   // pulsador 11
-    {nota:'SOL4', dur:500},  // pulsador 9
-    {nota:'FA4', dur:500},   // pulsador 7
-    {nota:'RE4', dur:500},   // pulsador 3
-    {nota:'DO4', dur:600}    // pulsador 1
+    {nota:'DO4', dur:500},   // pulsador 1 / LED 1
+    {nota:'RE4', dur:500},   // pulsador 3 / LED 2
+    {nota:'DO4', dur:500},   
+    {nota:'RE4', dur:500},
+    {nota:'DO4', dur:500},
+    {nota:'RE4', dur:500},
+    {nota:'DO4', dur:500},
+    {nota:'RE4', dur:500},
+    {nota:'DO4', dur:500},
+    {nota:'RE4', dur:500},
+    {nota:'DO4', dur:500},
+    {nota:'RE4', dur:600},
+    {nota:'DO4', dur:500},
+    {nota:'RE4', dur:500},
+    {nota:'DO4', dur:500},
+    {nota:'RE4', dur:500},
+    {nota:'DO4', dur:500},
+    {nota:'RE4', dur:500},
+    {nota:'DO4', dur:500},
+    {nota:'RE4', dur:500},
+    {nota:'DO4', dur:500},
+    {nota:'RE4', dur:500},
+    {nota:'DO4', dur:600}    // final amb DO4
   ];
 
   // estat global
@@ -471,7 +469,7 @@
   let playSpeed = 1.0;
   let currentLedIndex = -1;
 
-  // presets (amb la nova cançó Pràctica)
+  // presets (amb la nova cançó Pràctica només DO i RE)
   let presetSongs = [
     { nom: "Cumpleaños Feliz", autor: "Tradicional", notes: [{nota:'DO4',dur:400},{nota:'DO4',dur:200},{nota:'RE4',dur:600},{nota:'DO4',dur:600},{nota:'FA4',dur:600},{nota:'MI4',dur:1200},{nota:'DO4',dur:400},{nota:'DO4',dur:200},{nota:'RE4',dur:600},{nota:'DO4',dur:600},{nota:'SOL4',dur:600},{nota:'FA4',dur:1200},{nota:'DO4',dur:400},{nota:'DO4',dur:200},{nota:'DO5',dur:600},{nota:'LA4',dur:600},{nota:'FA4',dur:600},{nota:'MI4',dur:600},{nota:'RE4',dur:600},{nota:'SI4',dur:400},{nota:'SI4',dur:200},{nota:'LA4',dur:600},{nota:'FA4',dur:600},{nota:'SOL4',dur:600},{nota:'FA4',dur:1200}] },
     { nom: "Oda a l'Alegria", autor: "Beethoven", notes: [{nota:'MI4',dur:400},{nota:'MI4',dur:400},{nota:'FA4',dur:400},{nota:'SOL4',dur:400},{nota:'SOL4',dur:400},{nota:'FA4',dur:400},{nota:'MI4',dur:400},{nota:'RE4',dur:400},{nota:'DO4',dur:400},{nota:'DO4',dur:400},{nota:'RE4',dur:400},{nota:'MI4',dur:400},{nota:'MI4',dur:600},{nota:'RE4',dur:200},{nota:'RE4',dur:800},{nota:'MI4',dur:400},{nota:'MI4',dur:400},{nota:'FA4',dur:400},{nota:'SOL4',dur:400},{nota:'SOL4',dur:400},{nota:'FA4',dur:400},{nota:'MI4',dur:400},{nota:'RE4',dur:400},{nota:'DO4',dur:400},{nota:'DO4',dur:400},{nota:'RE4',dur:400},{nota:'MI4',dur:400},{nota:'RE4',dur:600},{nota:'DO4',dur:200},{nota:'DO4',dur:800}] },
