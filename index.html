@@ -429,6 +429,63 @@
     }
   }
 
+  // Mapeig de pulsadors a notes (només els que demanes: 1,3,7,9,11,15,17,19,23,25,27,31)
+  // Aquests pulsadors físics (indexos 0-based) es corresponen amb:
+  // Pulsador 1 -> nota DO4 (LED 0)
+  // Pulsador 3 -> RE4 (LED 1)
+  // Pulsador 7 -> FA4 (LED 3)
+  // Pulsador 9 -> SOL4 (LED 4)
+  // Pulsador 11 -> LA4 (LED 5)
+  // Pulsador 15 -> DO5 (LED 7)
+  // Pulsador 17 -> RE5 (LED 8)
+  // Pulsador 19 -> MI5 (LED 9)
+  // Pulsador 23 -> SOL5 (LED 11)
+  // Pulsador 25 -> LA5 (LED 12)
+  // Pulsador 27 -> SI5 (LED 13)
+  // Pulsador 31 -> DO6 (LED 14)
+  
+  // Cançó de pràctica creada manualment només amb els pulsadors especificats
+  const PRACTICA_NOTES = [
+    // Primera seqüència: escala ascendent amb els pulsadors disponibles
+    {nota:'DO4', dur:500},  // pulsador 1
+    {nota:'RE4', dur:500},  // pulsador 3
+    {nota:'FA4', dur:500},  // pulsador 7
+    {nota:'SOL4', dur:500}, // pulsador 9
+    {nota:'LA4', dur:500},  // pulsador 11
+    {nota:'DO5', dur:500},  // pulsador 15
+    {nota:'RE5', dur:500},  // pulsador 17
+    {nota:'MI5', dur:500},  // pulsador 19
+    {nota:'SOL5', dur:500}, // pulsador 23
+    {nota:'LA5', dur:500},  // pulsador 25
+    {nota:'SI5', dur:500},  // pulsador 27
+    {nota:'DO6', dur:500},  // pulsador 31
+    // Seqüència descendent
+    {nota:'SI5', dur:500},  // pulsador 27
+    {nota:'LA5', dur:500},  // pulsador 25
+    {nota:'SOL5', dur:500}, // pulsador 23
+    {nota:'MI5', dur:500},  // pulsador 19
+    {nota:'RE5', dur:500},  // pulsador 17
+    {nota:'DO5', dur:500},  // pulsador 15
+    {nota:'LA4', dur:500},  // pulsador 11
+    {nota:'SOL4', dur:500}, // pulsador 9
+    {nota:'FA4', dur:500},  // pulsador 7
+    {nota:'RE4', dur:500},  // pulsador 3
+    {nota:'DO4', dur:500},  // pulsador 1
+    // Patró rítmic combinat
+    {nota:'DO4', dur:300},  // pulsador 1
+    {nota:'RE4', dur:300},  // pulsador 3
+    {nota:'MI5', dur:400},  // pulsador 19
+    {nota:'RE5', dur:300},  // pulsador 17
+    {nota:'DO5', dur:300},  // pulsador 15
+    {nota:'LA4', dur:400},  // pulsador 11
+    {nota:'SOL4', dur:300}, // pulsador 9
+    {nota:'FA4', dur:300},  // pulsador 7
+    {nota:'SOL5', dur:500}, // pulsador 23
+    {nota:'LA5', dur:500},  // pulsador 25
+    {nota:'SI5', dur:500},  // pulsador 27
+    {nota:'DO6', dur:600}   // pulsador 31 (final)
+  ];
+
   // estat global
   let btDevice = null;
   let btCharacteristic = null;
@@ -442,10 +499,11 @@
   let playSpeed = 1.0;
   let currentLedIndex = -1;
 
-  // presets
+  // presets (incloent la nova cançó Pràctica Ràpida)
   let presetSongs = [
     { nom: "Cumpleaños Feliz", autor: "Tradicional", notes: [{nota:'DO4',dur:400},{nota:'DO4',dur:200},{nota:'RE4',dur:600},{nota:'DO4',dur:600},{nota:'FA4',dur:600},{nota:'MI4',dur:1200},{nota:'DO4',dur:400},{nota:'DO4',dur:200},{nota:'RE4',dur:600},{nota:'DO4',dur:600},{nota:'SOL4',dur:600},{nota:'FA4',dur:1200},{nota:'DO4',dur:400},{nota:'DO4',dur:200},{nota:'DO5',dur:600},{nota:'LA4',dur:600},{nota:'FA4',dur:600},{nota:'MI4',dur:600},{nota:'RE4',dur:600},{nota:'SI4',dur:400},{nota:'SI4',dur:200},{nota:'LA4',dur:600},{nota:'FA4',dur:600},{nota:'SOL4',dur:600},{nota:'FA4',dur:1200}] },
-    { nom: "Oda a l'Alegria", autor: "Beethoven", notes: [{nota:'MI4',dur:400},{nota:'MI4',dur:400},{nota:'FA4',dur:400},{nota:'SOL4',dur:400},{nota:'SOL4',dur:400},{nota:'FA4',dur:400},{nota:'MI4',dur:400},{nota:'RE4',dur:400},{nota:'DO4',dur:400},{nota:'DO4',dur:400},{nota:'RE4',dur:400},{nota:'MI4',dur:400},{nota:'MI4',dur:600},{nota:'RE4',dur:200},{nota:'RE4',dur:800},{nota:'MI4',dur:400},{nota:'MI4',dur:400},{nota:'FA4',dur:400},{nota:'SOL4',dur:400},{nota:'SOL4',dur:400},{nota:'FA4',dur:400},{nota:'MI4',dur:400},{nota:'RE4',dur:400},{nota:'DO4',dur:400},{nota:'DO4',dur:400},{nota:'RE4',dur:400},{nota:'MI4',dur:400},{nota:'RE4',dur:600},{nota:'DO4',dur:200},{nota:'DO4',dur:800}] }
+    { nom: "Oda a l'Alegria", autor: "Beethoven", notes: [{nota:'MI4',dur:400},{nota:'MI4',dur:400},{nota:'FA4',dur:400},{nota:'SOL4',dur:400},{nota:'SOL4',dur:400},{nota:'FA4',dur:400},{nota:'MI4',dur:400},{nota:'RE4',dur:400},{nota:'DO4',dur:400},{nota:'DO4',dur:400},{nota:'RE4',dur:400},{nota:'MI4',dur:400},{nota:'MI4',dur:600},{nota:'RE4',dur:200},{nota:'RE4',dur:800},{nota:'MI4',dur:400},{nota:'MI4',dur:400},{nota:'FA4',dur:400},{nota:'SOL4',dur:400},{nota:'SOL4',dur:400},{nota:'FA4',dur:400},{nota:'MI4',dur:400},{nota:'RE4',dur:400},{nota:'DO4',dur:400},{nota:'DO4',dur:400},{nota:'RE4',dur:400},{nota:'MI4',dur:400},{nota:'RE4',dur:600},{nota:'DO4',dur:200},{nota:'DO4',dur:800}] },
+    { nom: "Pràctica Ràpida", autor: "TeclaLux Studio", notes: PRACTICA_NOTES }
   ];
 
   let selectedSongId = null;
@@ -672,69 +730,4 @@
         document.getElementById('openPlayerBtn').disabled = false;
         document.getElementById('songSelectHint').innerHTML = `🎵 MIDI carregat: ${extracted.length} notes`;
       } catch(e) { alert("Error MIDI: " + e.message); }
-    });
-  }
-
-  // BLUETOOTH CONNEXIÓ
-  async function connectBluetooth() {
-    try {
-      const led = document.getElementById('connLed');
-      const statusText = document.getElementById('connStatusText');
-      led.className = 'bt-led connecting';
-      statusText.innerText = 'Connectant...';
-      const device = await navigator.bluetooth.requestDevice({ filters: [{ name: 'TeclatMusical' }], optionalServices: ['0000ffe0-0000-1000-8000-00805f9b34fb'] });
-      btDevice = device;
-      const server = await device.gatt.connect();
-      const service = await server.getPrimaryService('0000ffe0-0000-1000-8000-00805f9b34fb');
-      btCharacteristic = await service.getCharacteristic('0000ffe1-0000-1000-8000-00805f9b34fb');
-      await btCharacteristic.startNotifications();
-      setupNotifications();
-      isConnected = true;
-      led.className = 'bt-led connected';
-      statusText.innerText = `Connectat (${device.name || 'TeclaLux'})`;
-      // després d'èxit, anar a pantalla cançons
-      switchScreen('screenSongs');
-    } catch(e) {
-      const led = document.getElementById('connLed');
-      const statusText = document.getElementById('connStatusText');
-      led.className = 'bt-led';
-      statusText.innerText = 'Error connexió';
-      alert('No s’ha pogut connectar: ' + e.message);
-    }
-  }
-
-  function disconnectFull() {
-    if (btDevice && btDevice.gatt.connected) btDevice.gatt.disconnect();
-    isConnected = false;
-    btCharacteristic = null;
-    btDevice = null;
-    const led = document.getElementById('connLed');
-    const statusText = document.getElementById('connStatusText');
-    if (led) { led.className = 'bt-led'; statusText.innerText = 'Desconnectat'; }
-    if (isPlaying) isPlaying = false;
-    waitingForESP = false;
-    switchScreen('screenConnect');
-  }
-
-  // EVENTS
-  window.onload = () => {
-    buildLedVisuals();
-    rebuildSongLibrary();
-    document.getElementById('mainConnectBtn').onclick = connectBluetooth;
-    document.getElementById('disconnectFromSongsBtn').onclick = disconnectFull;
-    document.getElementById('backToConnectFromSongs').onclick = disconnectFull;
-    document.getElementById('disconnectFromPlayerBtn').onclick = disconnectFull;
-    document.getElementById('backToLibraryFromPlayer').onclick = () => { if (isPlaying) isPlaying=false; waitingForESP=false; switchScreen('screenSongs'); };
-    document.getElementById('exitToSongsBtn').onclick = () => { if (isPlaying) isPlaying=false; waitingForESP=false; switchScreen('screenSongs'); };
-    document.getElementById('openPlayerBtn').onclick = () => { if (currentSong && sequenceNotes.length) switchScreen('screenPlayer'); };
-    document.getElementById('playerPlayPauseBtn').onclick = togglePlayPause;
-    document.getElementById('playerResetBtn').onclick = resetSong;
-    const speedSlider = document.getElementById('playerSpeedSlider');
-    const speedVal = document.getElementById('playerSpeedVal');
-    speedSlider.addEventListener('input', (e) => { playSpeed = parseFloat(e.target.value); speedVal.innerText = `×${playSpeed.toFixed(2)}`; });
-    document.getElementById('midiFileInput').addEventListener('change', (e) => { if(e.target.files[0]) loadMidiFromFile(e.target.files[0]); e.target.value=''; });
-    document.getElementById('midiUploadLabel').addEventListener('click', () => document.getElementById('midiFileInput').click());
-  };
-</script>
-</body>
-</html>
+   
