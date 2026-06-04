@@ -422,8 +422,8 @@
   }
 
   // ========== NOVA CANÇÓ DE PRÀCTICA ALEATÒRIA ==========
-  // Només 3 notes: RE4 (pulsador 3), FA4 (pulsador 6), LA4 (pulsador 10)
-  const NOTES_PRACTICA = ['RE4', 'FA4', 'LA4'];
+  // Només 2 notes: RE4 (pulsador 3) i LA4 (pulsador 10)
+  const NOTES_PRACTICA = ['RE4', 'LA4'];
   
   // Funció per generar seqüència aleatòria
   function generarPracticaAleatoria(numNotes) {
@@ -435,9 +435,8 @@
     return notes;
   }
   
-  // Generar 30 notes aleatòries per la pràctica
+  // Generar 30 notes aleatòries (RE4 o LA4)
   const PRACTICA_NOTES = generarPracticaAleatoria(30);
-
   // ========== ALTRES CANÇONS PRESET ==========
   let presetSongs = [
     { nom: "Cumpleaños Feliz", autor: "Tradicional", notes: [{nota:'DO4',dur:400},{nota:'DO4',dur:200},{nota:'RE4',dur:600},{nota:'DO4',dur:600},{nota:'FA4',dur:600},{nota:'MI4',dur:1200},{nota:'DO4',dur:400},{nota:'DO4',dur:200},{nota:'RE4',dur:600},{nota:'DO4',dur:600},{nota:'SOL4',dur:600},{nota:'FA4',dur:1200},{nota:'DO4',dur:400},{nota:'DO4',dur:200},{nota:'DO5',dur:600},{nota:'LA4',dur:600},{nota:'FA4',dur:600},{nota:'MI4',dur:600},{nota:'RE4',dur:600},{nota:'SI4',dur:400},{nota:'SI4',dur:200},{nota:'LA4',dur:600},{nota:'FA4',dur:600},{nota:'SOL4',dur:600},{nota:'FA4',dur:1200}] },
