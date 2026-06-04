@@ -6,6 +6,7 @@
   <title>TeclaLux Studio — Aprenentatge Interactiu</title>
   <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,300;14..32,400;14..32,500;14..32,600;14..32,700&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
   <style>
+    /* El mateix CSS que tenies */
     * {
       margin: 0;
       padding: 0;
@@ -49,7 +50,6 @@
       z-index: 0;
     }
 
-    /* app container */
     .app {
       max-width: 560px;
       width: 100%;
@@ -58,7 +58,6 @@
       z-index: 2;
     }
 
-    /* pantalles */
     .screen {
       transition: opacity 0.3s ease, transform 0.2s ease;
     }
@@ -67,7 +66,6 @@
       display: none;
     }
 
-    /* targetes premium */
     .lux-card {
       background: var(--surface-card);
       border: 1px solid var(--border-subtle);
@@ -126,7 +124,6 @@
       color: #ffae9e;
     }
 
-    /* barra estat BT */
     .bt-status-bar {
       display: flex;
       align-items: center;
@@ -157,7 +154,6 @@
       100% { opacity: 1; transform: scale(1.2);}
     }
 
-    /* llista cançons */
     .song-grid {
       display: flex;
       flex-direction: column;
@@ -212,7 +208,6 @@
       background: var(--green-dim);
     }
 
-    /* teclat visual (tira LED simulada) */
     .led-panel {
       background: var(--surface-elevated);
       border-radius: 28px;
@@ -368,7 +363,7 @@
     <p id="songSelectHint" style="font-size: 11px; color: var(--text-muted); margin-top: 14px; text-align: center;">* selecciona una cançó per activar el botó</p>
   </div>
 
-  <!-- PANTALLA 3: PLAYER INTERACTIU (NOTES + VELOCITAT + LEDS) -->
+  <!-- PANTALLA 3: PLAYER INTERACTIU -->
   <div id="screenPlayer" class="screen hidden lux-card">
     <div style="display: flex; justify-content: space-between; align-items: baseline; flex-wrap: wrap;">
       <div>
@@ -378,12 +373,10 @@
       <button id="exitToSongsBtn" class="btn-lux" style="width: auto; padding: 8px 16px; background: #1e1e2c;" title="Tornar a cançons">📁 Cançons</button>
     </div>
 
-    <!-- LEDs simulats -->
     <div class="led-panel">
       <div class="led-strip-premium" id="ledVisualStrip"></div>
     </div>
 
-    <!-- Nota actual + estat -->
     <div class="nota-hero">
       <div class="big-note" id="playerCurrentNote">—</div>
       <div id="playerStateMessage" style="font-size: 14px; font-weight: 400; margin-top: 6px; color: var(--amber-accent);">⏳ esperant resposta</div>
@@ -394,7 +387,6 @@
       </div>
     </div>
 
-    <!-- controls reproducció + velocitat -->
     <div style="display: flex; gap: 12px; justify-content: center;">
       <button id="playerPlayPauseBtn" class="btn-lux" style="width: 70px;">▶</button>
       <button id="playerResetBtn" class="btn-lux btn-outline">↺ Reiniciar</button>
@@ -415,8 +407,8 @@
 
 <script src="https://cdn.jsdelivr.net/npm/midi-parser-js@4.0.6/src/midi-parser.js"></script>
 <script>
-  // ---------- CONSTANTS GLOBALS ----------
-  const NOTES_BLANQUES = ['DO4','RE4','MI4','FA4','SOL4','LA4','SI4','DO5','RE5','MI5','FA5','SOL5','LA5','SI5','DO6','RE6','MI6','FA6','SOL6','LA6','SI6','DO7'];
+  // ========== CONSTANTS GLOBALS ==========
+  const NOTES_BLANQUES = ['DO4','RE4','MI4','FA4','SOL4','LA4','SI4','DO5','RE5','MI5','FA5','SOL5','LA5','SI5','DO6','RE6','MI6','FA6','SOL6','LA6','SI6'];
   const MIDI_BASE = {0:'DO',1:'DO#',2:'RE',3:'RE#',4:'MI',5:'FA',6:'FA#',7:'SOL',8:'SOL#',9:'LA',10:'LA#',11:'SI'};
   const BLANQUES_SET = new Set(['DO','RE','MI','FA','SOL','LA','SI']);
   const MIDI_A_NOTA = {};
@@ -429,31 +421,28 @@
     }
   }
 
-  // CANÇÓ PRÀCTICA - NOMÉS AMB DO4 (pulsador 1) i RE4 (pulsador 3)
-  const PRACTICA_NOTES = [
-    {nota:'DO4', dur:500},   // pulsador 1 / LED 1
-    {nota:'RE4', dur:500},   // pulsador 3 / LED 2
-    {nota:'DO4', dur:500},   
-    {nota:'RE4', dur:500},
-    {nota:'DO4', dur:500},
-    {nota:'RE4', dur:500},
-    {nota:'DO4', dur:500},
-    {nota:'RE4', dur:500},
-    {nota:'DO4', dur:500},
-    {nota:'RE4', dur:500},
-    {nota:'DO4', dur:500},
-    {nota:'RE4', dur:600},
-    {nota:'DO4', dur:500},
-    {nota:'RE4', dur:500},
-    {nota:'DO4', dur:500},
-    {nota:'RE4', dur:500},
-    {nota:'DO4', dur:500},
-    {nota:'RE4', dur:500},
-    {nota:'DO4', dur:500},
-    {nota:'RE4', dur:500},
-    {nota:'DO4', dur:500},
-    {nota:'RE4', dur:500},
-    {nota:'DO4', dur:600}    // final amb DO4
+  // ========== NOVA CANÇÓ DE PRÀCTICA ALEATÒRIA ==========
+  // Només 3 notes: RE4 (pulsador 3), FA4 (pulsador 6), LA4 (pulsador 10)
+  const NOTES_PRACTICA = ['RE4', 'FA4', 'LA4'];
+  
+  // Funció per generar seqüència aleatòria
+  function generarPracticaAleatoria(numNotes) {
+    const notes = [];
+    for (let i = 0; i < numNotes; i++) {
+      const notaAleatoria = NOTES_PRACTICA[Math.floor(Math.random() * NOTES_PRACTICA.length)];
+      notes.push({ nota: notaAleatoria, dur: 600 });
+    }
+    return notes;
+  }
+  
+  // Generar 30 notes aleatòries per la pràctica
+  const PRACTICA_NOTES = generarPracticaAleatoria(30);
+
+  // ========== ALTRES CANÇONS PRESET ==========
+  let presetSongs = [
+    { nom: "Cumpleaños Feliz", autor: "Tradicional", notes: [{nota:'DO4',dur:400},{nota:'DO4',dur:200},{nota:'RE4',dur:600},{nota:'DO4',dur:600},{nota:'FA4',dur:600},{nota:'MI4',dur:1200},{nota:'DO4',dur:400},{nota:'DO4',dur:200},{nota:'RE4',dur:600},{nota:'DO4',dur:600},{nota:'SOL4',dur:600},{nota:'FA4',dur:1200},{nota:'DO4',dur:400},{nota:'DO4',dur:200},{nota:'DO5',dur:600},{nota:'LA4',dur:600},{nota:'FA4',dur:600},{nota:'MI4',dur:600},{nota:'RE4',dur:600},{nota:'SI4',dur:400},{nota:'SI4',dur:200},{nota:'LA4',dur:600},{nota:'FA4',dur:600},{nota:'SOL4',dur:600},{nota:'FA4',dur:1200}] },
+    { nom: "Oda a l'Alegria", autor: "Beethoven", notes: [{nota:'MI4',dur:400},{nota:'MI4',dur:400},{nota:'FA4',dur:400},{nota:'SOL4',dur:400},{nota:'SOL4',dur:400},{nota:'FA4',dur:400},{nota:'MI4',dur:400},{nota:'RE4',dur:400},{nota:'DO4',dur:400},{nota:'DO4',dur:400},{nota:'RE4',dur:400},{nota:'MI4',dur:400},{nota:'MI4',dur:600},{nota:'RE4',dur:200},{nota:'RE4',dur:800},{nota:'MI4',dur:400},{nota:'MI4',dur:400},{nota:'FA4',dur:400},{nota:'SOL4',dur:400},{nota:'SOL4',dur:400},{nota:'FA4',dur:400},{nota:'MI4',dur:400},{nota:'RE4',dur:400},{nota:'DO4',dur:400},{nota:'DO4',dur:400},{nota:'RE4',dur:400},{nota:'MI4',dur:400},{nota:'RE4',dur:600},{nota:'DO4',dur:200},{nota:'DO4',dur:800}] },
+    { nom: "Pràctica Aleatòria (RE4/FA4/LA4)", autor: "TeclaLux Studio - 30 notes", notes: PRACTICA_NOTES }
   ];
 
   // estat global
@@ -468,13 +457,6 @@
   let waitingForESP = false;
   let playSpeed = 1.0;
   let currentLedIndex = -1;
-
-  // presets (amb la nova cançó Pràctica només DO i RE)
-  let presetSongs = [
-    { nom: "Cumpleaños Feliz", autor: "Tradicional", notes: [{nota:'DO4',dur:400},{nota:'DO4',dur:200},{nota:'RE4',dur:600},{nota:'DO4',dur:600},{nota:'FA4',dur:600},{nota:'MI4',dur:1200},{nota:'DO4',dur:400},{nota:'DO4',dur:200},{nota:'RE4',dur:600},{nota:'DO4',dur:600},{nota:'SOL4',dur:600},{nota:'FA4',dur:1200},{nota:'DO4',dur:400},{nota:'DO4',dur:200},{nota:'DO5',dur:600},{nota:'LA4',dur:600},{nota:'FA4',dur:600},{nota:'MI4',dur:600},{nota:'RE4',dur:600},{nota:'SI4',dur:400},{nota:'SI4',dur:200},{nota:'LA4',dur:600},{nota:'FA4',dur:600},{nota:'SOL4',dur:600},{nota:'FA4',dur:1200}] },
-    { nom: "Oda a l'Alegria", autor: "Beethoven", notes: [{nota:'MI4',dur:400},{nota:'MI4',dur:400},{nota:'FA4',dur:400},{nota:'SOL4',dur:400},{nota:'SOL4',dur:400},{nota:'FA4',dur:400},{nota:'MI4',dur:400},{nota:'RE4',dur:400},{nota:'DO4',dur:400},{nota:'DO4',dur:400},{nota:'RE4',dur:400},{nota:'MI4',dur:400},{nota:'MI4',dur:600},{nota:'RE4',dur:200},{nota:'RE4',dur:800},{nota:'MI4',dur:400},{nota:'MI4',dur:400},{nota:'FA4',dur:400},{nota:'SOL4',dur:400},{nota:'SOL4',dur:400},{nota:'FA4',dur:400},{nota:'MI4',dur:400},{nota:'RE4',dur:400},{nota:'DO4',dur:400},{nota:'DO4',dur:400},{nota:'RE4',dur:400},{nota:'MI4',dur:400},{nota:'RE4',dur:600},{nota:'DO4',dur:200},{nota:'DO4',dur:800}] },
-    { nom: "Pràctica", autor: "TeclaLux Studio", notes: PRACTICA_NOTES }
-  ];
 
   let selectedSongId = null;
 
@@ -497,6 +479,7 @@
       container.appendChild(divWrap);
     });
   }
+  
   function highlightLed(notaName) {
     const idx = NOTES_BLANQUES.indexOf(notaName);
     if (currentLedIndex !== -1) {
@@ -666,7 +649,7 @@
         document.querySelectorAll('.song-card').forEach(c => c.classList.remove('selected'));
         div.classList.add('selected');
         document.getElementById('openPlayerBtn').disabled = false;
-        document.getElementById('songSelectHint').innerText = `✅ "${song.nom}" preparada. Prem "Iniciar Pràctica"`;
+        document.getElementById('songSelectHint').innerHTML = `✅ "${song.nom}" preparada. Prem "Iniciar Pràctica"`;
       };
       container.appendChild(div);
     });
